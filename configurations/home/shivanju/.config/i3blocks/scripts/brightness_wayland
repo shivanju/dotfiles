@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+case $BLOCK_BUTTON in
+  4) brightnessctl s 5%- &>/dev/null;; # swipe up, increase
+  5) brightnessctl s 5%+ &>/dev/null;; # swipe up, increase
+esac
+
+val=$(brightnessctl -m | awk -F , '{print $4}')
+echo $LABEL$val #full_text
+echo $LABEL$val #short_text
+echo "#EEBB4D"

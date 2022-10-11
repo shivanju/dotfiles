@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+pid=$(ps axf | grep "gammastep" | grep -v "grep" | head -n 1 | awk '{print $1}')
+case $BLOCK_BUTTON in
+  1)
+    if [ -z "${pid}" ] ; then
+        gammastep -P -O 3500 > /dev/null 2>&1 &
+    fi
+  	;;  # left click, turn on night mode
+  3)
+    ps axf | grep "gammastep" | grep -v "grep" | head -n 1 | awk '{print $1}' | xargs -r kill -15
+    ;; # right click, turn off night mode
+esac
+
+pid=$(ps axf | grep "gammastep" | grep -v "grep" | head -n 1 | awk '{print $1}')
+
+if [ -z "${pid}" ]; then
+	echo $LABEL"OFF"
+  echo ""
+  echo "#60A9A6"
+else
+	echo $LABEL"ON"
+  echo ""
+  echo "#EF4B4B"
+fi
+

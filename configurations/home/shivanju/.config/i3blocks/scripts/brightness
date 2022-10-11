@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+case $BLOCK_BUTTON in
+  4) xbacklight -dec 5;; # swipe up, increase
+  5) xbacklight -inc 5;; # swipe up, increase
+esac
+
+val=$(printf '%.0f' $(xbacklight))
+echo $LABEL$val% #full_text
+echo $LABEL$val% #short_text
+echo "#ffa01c"
