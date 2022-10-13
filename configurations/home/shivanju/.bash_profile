@@ -50,3 +50,8 @@ if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
     XKB_DEFAULT_LAYOUT=us exec sway 2>&1 | tee -a ~/.sway.log
 fi
 
+
+
+# Added by Toolbox App
+export PATH="$PATH:/home/shivanju/.local/share/JetBrains/Toolbox/scripts"
+
