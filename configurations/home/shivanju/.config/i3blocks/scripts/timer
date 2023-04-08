@@ -7,52 +7,48 @@ col_paused="#FFE9AE"
 col_stopped="#79B4B7"
 
 case $BLOCK_BUTTON in
-	1) if [ "$_state" == "stopped" ];
-	   then
-	       _state="running"
-	       _start_time=$now
-	       _total_pause=0
-	   fi
-	   ;;
-	2) _state="stopped"
-	   ;;
+	1) if [ "$_state" == "stopped" ]; then
+		   _state="running"
+		   _start_time=$now
+		   _total_pause=0
+	   fi ;;
+	2) _state="stopped" ;;
 	3) if [ "$_state" == "running" ]; then
 		   _state="paused"
 		   _pause_start_time=$now
 		   color=$col_paused
 	   elif [ "$_state" == "paused" ]; then
 	   	   _state="running"
-	   	   _total_pause=$(expr $_current_pause + $_total_pause)
-	   fi
-	   ;;
-	*);;
+	   	   _total_pause=$(($_current_pause + $_total_pause))
+	   fi ;;
 esac
 
-case $_state in
-	"stopped") _text="Pomodoro"
-			   color=$col_stopped
-			;;
-	"paused") _current_pause=$(expr $now - $_pause_start_time)
-			  lbl=""
-			;;
-	"running") elapsed=$(expr $now - $_start_time - $_total_pause)
-			   remaining=$(expr $_duration - $elapsed)
-			   if [ $remaining -le 0 ]; then
-                $(notify-send -t 5000 'Pomodoro ended.')
-			   	_state=stopped
-			   	_start_time=-1
-			   	_text="Pomodoro"
-			   	color=$col_stopped
-			   else
-			   minutes=$(expr $remaining / 60)
-			   seconds=$(expr $remaining - $minutes '*' 60)
-			   _text=$(printf "%02d:%02d" $minutes $seconds)
-			   color=$col_running
-			   fi
-			   ;;
-
-esac
+if [ "$_state" == "stopped" ]; then
+	_text="Pomodoro"
+	color=$col_stopped
+else
+	if [ "$_state" == "paused" ]; then
+		_current_pause=$(($now - $_pause_start_time))
+		lbl=""
+	else
+		elapsed=$(($now - $_start_time - $_total_pause))
+		remaining=$(($_duration - $elapsed))
+		if [ $remaining -le 0 ]; then
+            $(notify-send -t 5000 'Pomodoro ended.')
+		   	_state=stopped
+		   	_start_time=-1
+		   	_text="Pomodoro"
+		   	color=$col_stopped
+		else
+			minutes=$(($remaining / 60))
+			seconds=$(($remaining % 60))
+			_text=$(printf "%02d:%02d" $minutes $seconds)
+			color=$col_running
+		fi
+	fi
+fi
 
 _full_text=$lbl$_text
 
-echo "{ \"full_text\": \"$_full_text\", \"_state\":\"$_state\", \"_start_time\":\"$_start_time\", \"_pause_start_time\":\"$_pause_start_time\", \"_current_pause\":\"$_current_pause\", \"_total_pause\":\"$_total_pause\", \"_text\":\"$_text\",\"color\":\"$color\" }"
+echo "{\"full_text\": \"$_full_text\", \"_state\":\"$_state\", \"_start_time\":\"$_start_time\", \"_pause_start_time\":\"$_pause_start_time\", \"_current_pause\":\"$_current_pause\", \"_total_pause\":\"$_total_pause\", \"_text\":\"$_text\",\"color\":\"$color\"}"
+

@@ -26,14 +26,15 @@ require('packer').startup(function(use)
   use 'hrsh7th/cmp-nvim-lsp-signature-help' -- nvim-cmp source for method signature help
   use 'saadparwaiz1/cmp_luasnip' -- luasnip completion source for nvim-cmp
   use { 'L3MON4D3/LuaSnip', tag = 'v1.*' } -- Snippet Engine
-  use 'ellisonleao/gruvbox.nvim' -- Colorscheme
+  use { 'ellisonleao/gruvbox.nvim', commit = 'cb7a8a8' } -- Colorscheme
+  use 'mhartington/oceanic-next' -- Colorscheme
+  use 'folke/tokyonight.nvim' -- Colorscheme
   use 'nvim-lualine/lualine.nvim' -- Fancier statusline
   use 'lukas-reineke/indent-blankline.nvim' -- Add indentation guides even on blank lines
   use 'kyazdani42/nvim-tree.lua' -- File tree explorer
   use 'nvim-lua/plenary.nvim' -- Common lua functions required for other plugins to work
   use { 'nvim-telescope/telescope.nvim', branch = '0.1.x' } -- Fuzzy finder over lists
-  use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' } -- Fuzzy Finder Algorithm which requires local dependencies to be built. Only load if `make` is available
-  use { 'akinsho/toggleterm.nvim', tag = '*' } -- Manage neovim's built-in terminal
+  use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' } -- Fuzzy Finder Algorithm which requires local dependencies to be built.
 
   if is_bootstrap then
     require('packer').sync()
@@ -56,27 +57,15 @@ end
 
 -- Set colorscheme
 vim.o.termguicolors = true
+vim.o.background = 'dark'
 require('gruvbox').setup({
-  undercurl = true,
-  underline = true,
-  bold = true,
-  italic = true,
-  strikethrough = true,
-  invert_selection = false,
-  invert_signs = false,
-  invert_tabline = false,
-  invert_intend_guides = false,
-  inverse = true, -- invert background for search, diffs, statuslines and errors
-  contrast = "", -- can be "hard", "soft" or empty string
-  overrides = {},
-  dim_inactive = false,
-  transparent_mode = false,
+  contrast = 'hard', -- can be "hard", "soft" or empty string
 })
 vim.cmd('colorscheme gruvbox')
 
 -- Neovide(https://neovide.dev/) specific configurations
 if vim.g.neovide then
-  vim.g.gui_font_default_size = 16
+  vim.g.gui_font_default_size = 12
   vim.g.gui_font_size = vim.g.gui_font_default_size
   vim.g.gui_font_face = 'Jet Brains Mono'
   vim.g.neovide_refresh_rate_idle = 5
@@ -126,7 +115,7 @@ vim.o.undofile = true -- Save undo history
 vim.o.expandtab = true -- convert tabs to spaces
 vim.o.shiftwidth = 2 -- the number of spaces inserted for each indentation
 vim.o.tabstop = 2 -- insert 2 spaces for a tab
-vim.o.scrolloff = 4 -- minimum cursor distance from top or bottom of the screen
+vim.o.scrolloff = 2 -- minimum cursor distance from top or bottom of the screen
 vim.o.updatetime = 250 -- Decrease update time
 vim.wo.signcolumn = 'yes' -- Show signcolumn
 vim.o.completeopt = 'menu,menuone,noselect' -- Set completeopt to have a better completion experience
@@ -152,12 +141,24 @@ vim.g.maplocalleader = ' '
 -- See `:help vim.keymap.set()`
 vim.keymap.set('i', 'jk', '<Esc>', { silent = true })
 vim.keymap.set('i', 'kj', '<Esc>', { silent = true })
+vim.keymap.set('i', '<M-h>', '<C-o>h', { silent = true })
+vim.keymap.set('i', '<M-l>', '<C-o>a', { silent = true })
+vim.keymap.set('i', '<M-a>', '<C-o>^', { silent = true })
+vim.keymap.set('i', '<M-e>', '<C-o>$', { silent = true })
+vim.keymap.set('n', 'n', 'nzz', { silent = true })
+vim.keymap.set('n', 'N', 'Nzz', { silent = true })
+vim.keymap.set('n', '<M-b>', vim.cmd.bn, { silent = true, desc = 'goto next buffer' })
+vim.keymap.set('n', '<M-B>', vim.cmd.bp, { silent = true, desc = 'goto previous buffer' })
+vim.keymap.set('n', '<M-d>', vim.cmd.bd, { silent = true, desc = 'delete current buffer' })
+vim.keymap.set('n', '<M-a>', '<C-^>', { silent = true, desc = 'goto alternate buffer' })
+vim.keymap.set('n', '<M-t>', 'gt', { silent = true, desc = 'goto next tab' })
+vim.keymap.set('n', '<M-T>', 'gT', { silent = true, desc = 'goto previous tab' })
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'goto previous diagnostic' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'goto next diagnostic' })
 vim.keymap.set('n', '<leader>df', vim.diagnostic.open_float, { desc = 'show diagnostic in floating window' })
-vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist, { desc = 'send diagnostics to local list' })
+vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist, { desc = 'send buffer diagnostics to local list' })
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -182,17 +183,6 @@ require('lualine').setup({
   },
 })
 
--- Enable toggleterm
-require('toggleterm').setup({
-  open_mapping = [[<c-\>]],
-  direction = 'horizontal',
-  size = 18,
-  shade_terminals = true,
-  start_in_insert = true,
-  insert_mappings = true,
-  auto_scroll = true
-})
-
 -- Enable nvim-tree
 require('nvim-tree').setup({
   sort_by = "case_sensitive",
@@ -207,7 +197,7 @@ require('nvim-tree').setup({
     }
   }
 })
-vim.keymap.set('n', '<leader>e', '<cmd>NvimTreeToggle<cr>', { desc = 'open nvim-tree' })
+vim.keymap.set('n', '<leader>e', vim.cmd.NvimTreeToggle, { desc = 'open nvim-tree' })
 
 -- Enable Comment.nvim
 require('Comment').setup()
@@ -253,21 +243,23 @@ require('telescope').setup({
 -- Enable telescope fzf native, if installed
 pcall(require('telescope').load_extension, 'fzf')
 
+-- You can pass additional configuration to telescope to change theme, layout, etc.
+local theme = require('telescope.themes').get_ivy({
+  previewer = false,
+})
 -- See `:help telescope.builtin`
-vim.keymap.set('n', '<leader>b', require('telescope.builtin').buffers, { desc = 'find existing [b]uffers' })
-vim.keymap.set('n', '<leader>f', require('telescope.builtin').find_files, { desc = 'find [f]iles' })
-vim.keymap.set('n', '<leader>r', require('telescope.builtin').oldfiles, { desc = 'find [r]ecently opened files' })
+vim.keymap.set('n', '<leader>b', function() require('telescope.builtin').buffers(theme) end,
+  { desc = 'find current [b]uffers' })
+vim.keymap.set('n', '<leader>f', function() require('telescope.builtin').find_files(theme) end,
+  { desc = 'find [f]iles' })
+vim.keymap.set('n', '<leader>r', function() require('telescope.builtin').oldfiles(theme) end,
+  { desc = 'find [r]ecently opened files' })
 vim.keymap.set('n', '<leader>?', require('telescope.builtin').help_tags, { desc = '[?] search help' })
 vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[s]earch current [w]ord' })
 vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[s]earch by [g]rep' })
 vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[s]earch [d]iagnostics' })
-vim.keymap.set('n', '<leader>sf', function()
-  -- You can pass additional configuration to telescope to change theme, layout, etc.
-  require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
-    winblend = 10,
-    previewer = false,
-  })
-end, { desc = '[s]earch [f]uzzily in current buffer]' })
+vim.keymap.set('n', '<leader>sf', function() require('telescope.builtin').current_buffer_fuzzy_find(theme) end,
+  { desc = '[s]earch [f]uzzily in current buffer]' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
@@ -309,8 +301,8 @@ lspconfig.util.default_config = vim.tbl_extend(
       nmap('<C-k>', vim.lsp.buf.signature_help, 'signature documentation')
       nmap('gd', vim.lsp.buf.definition, '[g]oto [d]efinition')
       nmap('gT', vim.lsp.buf.type_definition, '[g]oto [T]ype definition')
-      nmap('gi', vim.lsp.buf.implementation, '[g]oto [i]mplementation')
-      nmap('<leader>n', vim.lsp.buf.rename, 'Re[n]ame')
+      nmap('gI', vim.lsp.buf.implementation, '[g]oto [I]mplementation')
+      nmap('<leader>n', vim.lsp.buf.rename, 're[n]ame')
       nmap('<leader>a', vim.lsp.buf.code_action, 'code [a]ction')
       nmap('gr', require('telescope.builtin').lsp_references, '[g]oto [r]eferences')
 
@@ -325,7 +317,7 @@ lspconfig.util.default_config = vim.tbl_extend(
     end,
 
     -- nvim-cmp supports additional completion capabilities
-    capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+    capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
   }
 )
 
@@ -384,8 +376,8 @@ cmp.setup {
     end,
   },
   mapping = cmp.mapping.preset.insert {
-    ['<C-b>'] = cmp.mapping.scroll_docs(-1),
-    ['<C-f>'] = cmp.mapping.scroll_docs(1),
+    ['<C-u>'] = cmp.mapping.scroll_docs(-1),
+    ['<C-d>'] = cmp.mapping.scroll_docs(1),
     ['<C-Space>'] = cmp.mapping.complete({}),
     ['<C-e>'] = cmp.mapping.abort(),
     ['<CR>'] = cmp.mapping.confirm({
@@ -432,6 +424,9 @@ cmp.setup {
     end,
   },
 }
+-- ToDo
+-- Some decent git plugin
+-- Use telescope git builtins
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

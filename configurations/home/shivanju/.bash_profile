@@ -22,7 +22,7 @@ export MANPAGER='nvim +Man!'
 # Source bashrc
 [[ -f ~/.bashrc ]] && . ~/.bashrc
 
-export NEOVIDE_MULTIGRID='set'
+export NEOVIDE_MULTIGRID='true'
 #-----------------------------#
 #      Graphical Session      #
 #-----------------------------#
