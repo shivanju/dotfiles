@@ -26,7 +26,7 @@ STEP=5%
 
 [brightness_wayland]
 command=$SCRIPT_DIR/brightness_wayland
-LABEL=
+LABEL=󰃞
 interval=once
 signal=11
 STEP=5
@@ -52,7 +52,7 @@ DECIMALS=0
 
 [memory]
 command=$SCRIPT_DIR/memory
-label=
+label=󰍛
 #instance=swap
 interval=10
 
@@ -64,4 +64,4 @@ interval=30
 [time]
 command=$SCRIPT_DIR/datetime
 interval=10
-label=
+label=󱛡

@@ -1,140 +1,137 @@
--- Install packer
-local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
-local is_bootstrap = false
-if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
-  is_bootstrap = true
-  vim.fn.execute('!git clone https://github.com/wbthomason/packer.nvim ' .. install_path)
-  vim.cmd [[packadd packer.nvim]]
-end
-
--- stylua: ignore start
-require('packer').startup(function(use)
-  use 'wbthomason/packer.nvim' -- Package manager
-  use 'folke/which-key.nvim' -- Display key bindings
-  use 'numToStr/Comment.nvim' -- "gc" to comment visual regions/lines
-  use { 'kylechui/nvim-surround', tag = "*" } -- Add/change/delete surrounding delimiter
-  use 'windwp/nvim-autopairs' -- Autopair support
-  use 'nvim-treesitter/nvim-treesitter' -- Highlight, edit, and navigate code
-  use { 'nvim-treesitter/nvim-treesitter-textobjects', after = { 'nvim-treesitter' } } -- Additional textobjects for treesitter
-  use 'neovim/nvim-lspconfig' -- Collection of configurations for built-in LSP client
-  use 'williamboman/mason.nvim' -- Manage external editor tooling i.e. LSP servers
-  use 'williamboman/mason-lspconfig.nvim' -- Automatically install language servers to stdpath
-  use 'hrsh7th/nvim-cmp' -- Autocompletion engine
-  use 'hrsh7th/cmp-nvim-lsp' -- nvim-cmp source for Neovim's built-in Lsp client
-  use 'hrsh7th/cmp-path' -- nvim-cmp source for file paths
-  use 'hrsh7th/cmp-buffer' -- nvim-cmp source for buffer words
-  use 'hrsh7th/cmp-nvim-lsp-signature-help' -- nvim-cmp source for method signature help
-  use 'saadparwaiz1/cmp_luasnip' -- luasnip completion source for nvim-cmp
-  use { 'L3MON4D3/LuaSnip', tag = 'v1.*' } -- Snippet Engine
-  use { 'ellisonleao/gruvbox.nvim', commit = 'cb7a8a8' } -- Colorscheme
-  use 'mhartington/oceanic-next' -- Colorscheme
-  use 'folke/tokyonight.nvim' -- Colorscheme
-  use 'nvim-lualine/lualine.nvim' -- Fancier statusline
-  use 'lukas-reineke/indent-blankline.nvim' -- Add indentation guides even on blank lines
-  use 'kyazdani42/nvim-tree.lua' -- File tree explorer
-  use 'nvim-lua/plenary.nvim' -- Common lua functions required for other plugins to work
-  use { 'nvim-telescope/telescope.nvim', branch = '0.1.x' } -- Fuzzy finder over lists
-  use { 'nvim-telescope/telescope-fzf-native.nvim', run = 'make' } -- Fuzzy Finder Algorithm which requires local dependencies to be built.
-
-  if is_bootstrap then
-    require('packer').sync()
-  end
-end)
--- stylua: ignore end
-
--- When we are bootstrapping a configuration, it doesn't
--- make sense to execute the rest of the init.lua.
---
--- You'll need to restart nvim, and then it will work.
-if is_bootstrap then
-  print '=================================='
-  print '    Plugins are being installed'
-  print '    Wait until Packer completes,'
-  print '       then restart nvim'
-  print '=================================='
-  return
-end
-
--- Set colorscheme
-vim.o.termguicolors = true
-vim.o.background = 'dark'
-require('gruvbox').setup({
-  contrast = 'hard', -- can be "hard", "soft" or empty string
-})
-vim.cmd('colorscheme gruvbox')
-
--- Neovide(https://neovide.dev/) specific configurations
-if vim.g.neovide then
-  vim.g.gui_font_default_size = 12
-  vim.g.gui_font_size = vim.g.gui_font_default_size
-  vim.g.gui_font_face = 'Jet Brains Mono'
-  vim.g.neovide_refresh_rate_idle = 5
-  vim.g.neovide_scroll_animation_length = 0.5
-
-  RefreshGuiFont = function()
-    vim.opt.guifont = string.format("%s:h%s", vim.g.gui_font_face, vim.g.gui_font_size)
-  end
-
-  ResizeGuiFont = function(delta)
-    vim.g.gui_font_size = vim.g.gui_font_size + delta
-    RefreshGuiFont()
-  end
-
-  ResetGuiFont = function()
-    vim.g.gui_font_size = vim.g.gui_font_default_size
-    RefreshGuiFont()
-  end
-
-  -- Call function on startup to set default value
-  ResetGuiFont()
-
-  -- Keymaps
-  local opts = { noremap = true, silent = true }
-
-  vim.keymap.set({ 'n', 'i' }, "<C-+>", function() ResizeGuiFont(1) end, opts)
-  vim.keymap.set({ 'n', 'i' }, "<C-->", function() ResizeGuiFont(-1) end, opts)
-end
-
--- [[ Setting options ]]
--- See `:help vim.o`
-vim.o.laststatus = 3 -- Global statusline
-vim.o.cmdheight = 1 -- Command-line height
-vim.o.showmode = false -- Do not show current vim mode since it is already shown on statusline
-vim.o.clipboard = 'unnamedplus' -- Allows neovim to access the system clipboard
-vim.o.hlsearch = true -- Set highlight on search
-vim.o.ignorecase = true -- Case insensitive search
-vim.o.smartcase = true -- Case sensitive search if using /C or capital
-vim.wo.number = true -- Make line numbers default
-vim.o.relativenumber = true -- Enable relative line numbering
-vim.o.cursorline = true -- highlight the current line
-vim.o.mouse = 'a' -- Enable mouse mode
-vim.o.smartindent = true -- smart indent
-vim.o.autoindent = true -- auto indent
-vim.o.breakindent = true -- Enable break indent
-vim.o.undofile = true -- Save undo history
-vim.o.expandtab = true -- convert tabs to spaces
-vim.o.shiftwidth = 2 -- the number of spaces inserted for each indentation
-vim.o.tabstop = 2 -- insert 2 spaces for a tab
-vim.o.scrolloff = 2 -- minimum cursor distance from top or bottom of the screen
-vim.o.updatetime = 250 -- Decrease update time
-vim.wo.signcolumn = 'yes' -- Show signcolumn
-vim.o.completeopt = 'menu,menuone,noselect' -- Set completeopt to have a better completion experience
-vim.o.backup = false -- backup file creation
-vim.o.conceallevel = 0 -- so that `` is visible in markdown files
-vim.o.fileencoding = "utf-8" -- the encoding written to a file
-vim.o.pumheight = 10 -- pop up menu height
-vim.o.splitbelow = true -- force all horizontal splits to go below current window
-vim.o.splitright = true -- force all vertical splits to go to the right of current window
-vim.o.swapfile = false -- swapfile creation
-vim.o.timeoutlen = 500 -- time to wait for a mapped sequence to complete (in milliseconds)
-vim.o.whichwrap = 'b,s,<,>,[,]' -- allow left, right keys to wrap around lines
-vim.o.winbar = '%n %m%F' -- Show buffer info on the winbar
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
 -- NOTE: Must happen before plugins are required (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+
+-- Install package manager
+local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system {
+    'git',
+    'clone',
+    '--filter=blob:none',
+    'https://github.com/folke/lazy.nvim.git',
+    '--branch=stable', -- latest stable release
+    lazypath,
+  }
+end
+vim.opt.rtp:prepend(lazypath)
+
+require('lazy').setup({
+  {
+    'ellisonleao/gruvbox.nvim',
+    priority = 1000,
+    opts = {
+      contrast = 'hard' -- can be "hard", "soft" or empty string
+    }
+  },
+  { 'folke/which-key.nvim',   opts = {} },
+  { 'numToStr/Comment.nvim',  opts = {} },
+  { 'kylechui/nvim-surround', version = "*", opts = {} },
+  {
+    'windwp/nvim-autopairs',
+    opts = {
+      enable_check_bracket_line = false
+    }
+  },
+  {
+    'nvim-lualine/lualine.nvim',
+    opts = {
+      options = {
+        icons_enabled = false,
+        theme = 'gruvbox',
+        component_separators = '|',
+        section_separators = '',
+        path = 0
+      },
+    }
+  },
+  {
+    'lukas-reineke/indent-blankline.nvim',
+    opts = {
+      char = '┊',
+      show_trailing_blankline_indent = false,
+      show_first_indent_level = true,
+      use_treesitter = true,
+      show_current_context = false
+    }
+  },
+  {
+    "folke/trouble.nvim",
+    opts = {
+      -- settings without a patched font or icons
+      icons = false,
+      fold_open = "v",      -- icon used for open folds
+      fold_closed = ">",    -- icon used for closed folds
+      indent_lines = false, -- add an indent guide below the fold icons
+      signs = {
+        -- icons / text used for a diagnostic
+        error = "error",
+        warning = "warn",
+        hint = "hint",
+        information = "info"
+      },
+      use_diagnostic_signs = false -- enabling this will use the signs defined in your lsp client
+    }
+  },
+  { 'j-hui/fidget.nvim',        opts = {} },
+  { 'folke/neodev.nvim',        opts = {} },
+  { 'kyazdani42/nvim-tree.lua', opts = {} },
+  'nvim-treesitter/nvim-treesitter',
+  'nvim-tree/nvim-web-devicons',
+  'williamboman/mason.nvim',
+  'williamboman/mason-lspconfig.nvim',
+  'neovim/nvim-lspconfig',
+  'hrsh7th/nvim-cmp',
+  'hrsh7th/cmp-nvim-lsp',
+  'hrsh7th/cmp-path',
+  'hrsh7th/cmp-buffer',
+  'hrsh7th/cmp-nvim-lsp-signature-help',
+  { 'L3MON4D3/LuaSnip', version = 'v1.*', opts = {} },
+  'saadparwaiz1/cmp_luasnip',
+  'nvim-lua/plenary.nvim',
+  'nvim-telescope/telescope.nvim',
+})
+
+-- set colorscheme
+vim.cmd.colorscheme 'gruvbox'
+
+-- [[ Setting options ]]
+-- See `:help vim.o`
+vim.o.termguicolors = true
+vim.o.background = 'dark'
+vim.o.laststatus = 3                        -- Global statusline
+vim.o.cmdheight = 1                         -- Command-line height
+vim.o.showmode = false                      -- Do not show current vim mode since it is already shown on statusline
+vim.o.clipboard = 'unnamedplus'             -- Allows neovim to access the system clipboard
+vim.o.hlsearch = true                       -- Set highlight on search
+vim.o.ignorecase = true                     -- Case insensitive search
+vim.o.smartcase = true                      -- Case sensitive search if using /C or capital
+vim.wo.number = true                        -- Make line numbers default
+vim.o.relativenumber = true                 -- Enable relative line numbering
+vim.o.cursorline = true                     -- highlight the current line
+vim.o.mouse = 'a'                           -- Enable mouse mode
+vim.o.smartindent = true                    -- smart indent
+vim.o.autoindent = true                     -- auto indent
+vim.o.breakindent = true                    -- Enable break indent
+vim.o.undofile = true                       -- Save undo history
+vim.o.expandtab = true                      -- convert tabs to spaces
+vim.o.shiftwidth = 2                        -- the number of spaces inserted for each indentation
+vim.o.tabstop = 2                           -- insert 2 spaces for a tab
+vim.o.scrolloff = 2                         -- minimum cursor distance from top or bottom of the screen
+vim.o.updatetime = 250                      -- Decrease update time
+vim.wo.signcolumn = 'yes'                   -- Show signcolumn
+vim.o.completeopt = 'menu,menuone,noselect' -- Set completeopt to have a better completion experience
+vim.o.backup = false                        -- backup file creation
+vim.o.conceallevel = 0                      -- so that `` is visible in markdown files
+vim.o.pumheight = 10                        -- pop up menu height
+vim.o.splitbelow = true                     -- force all horizontal splits to go below current window
+vim.o.splitright = true                     -- force all vertical splits to go to the right of current window
+vim.o.swapfile = false                      -- swapfile creation
+vim.o.timeoutlen = 500                      -- time to wait for a mapped sequence to complete (in milliseconds)
+vim.o.whichwrap = 'b,s,<,>,[,]'             -- allow left, right keys to wrap around lines
+vim.o.winbar = '%n %m%F'                    -- Show buffer info on the winbar
 
 -- [[ Basic Keymaps ]]
 -- Keymaps for better default experience
@@ -154,11 +151,22 @@ vim.keymap.set('n', '<M-a>', '<C-^>', { silent = true, desc = 'goto alternate bu
 vim.keymap.set('n', '<M-t>', 'gt', { silent = true, desc = 'goto next tab' })
 vim.keymap.set('n', '<M-T>', 'gT', { silent = true, desc = 'goto previous tab' })
 
+-- Remap for dealing with line wrap
+vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
+vim.keymap.set('n', 'j', "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true })
+
 -- Diagnostic keymaps
 vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'goto previous diagnostic' })
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'goto next diagnostic' })
 vim.keymap.set('n', '<leader>df', vim.diagnostic.open_float, { desc = 'show diagnostic in floating window' })
 vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist, { desc = 'send buffer diagnostics to local list' })
+
+vim.keymap.set('n', '<leader>e', vim.cmd.NvimTreeToggle, { desc = 'open nvim-tree' })
+
+-- Global diagnostic config
+vim.diagnostic.config({
+  virtual_text = false
+})
 
 -- [[ Highlight on yank ]]
 -- See `:help vim.highlight.on_yank()`
@@ -170,58 +178,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = highlight_group,
   pattern = '*',
 })
-
--- Set lualine as statusline
--- See `:help lualine.txt`
-require('lualine').setup({
-  options = {
-    icons_enabled = false,
-    theme = 'gruvbox',
-    component_separators = '|',
-    section_separators = '',
-    path = 0,
-  },
-})
-
--- Enable nvim-tree
-require('nvim-tree').setup({
-  sort_by = "case_sensitive",
-  renderer = {
-    icons = {
-      show = {
-        file = false,
-        folder = false,
-        folder_arrow = false,
-        git = false,
-      }
-    }
-  }
-})
-vim.keymap.set('n', '<leader>e', vim.cmd.NvimTreeToggle, { desc = 'open nvim-tree' })
-
--- Enable Comment.nvim
-require('Comment').setup()
-
--- Enable autopairs
-require('nvim-autopairs').setup({
-  enable_check_bracket_line = false,
-})
-
--- Enable nvim-surround
-require('nvim-surround').setup({})
-
--- Enable `lukas-reineke/indent-blankline.nvim`
--- See `:help indent_blankline.txt`
-require('indent_blankline').setup({
-  char = '┊',
-  show_trailing_blankline_indent = false,
-  show_first_indent_level = true,
-  use_treesitter = true,
-  show_current_context = false
-})
-
--- Enable which-key
-require('which-key').setup()
 
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
@@ -240,46 +196,32 @@ require('telescope').setup({
   }
 })
 
--- Enable telescope fzf native, if installed
-pcall(require('telescope').load_extension, 'fzf')
-
 -- You can pass additional configuration to telescope to change theme, layout, etc.
 local theme = require('telescope.themes').get_ivy({
   previewer = false,
 })
 -- See `:help telescope.builtin`
-vim.keymap.set('n', '<leader>b', function() require('telescope.builtin').buffers(theme) end,
+local ts_builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>b', function() ts_builtin.buffers(theme) end,
   { desc = 'find current [b]uffers' })
-vim.keymap.set('n', '<leader>f', function() require('telescope.builtin').find_files(theme) end,
+vim.keymap.set('n', '<leader>f', function() ts_builtin.find_files(theme) end,
   { desc = 'find [f]iles' })
-vim.keymap.set('n', '<leader>r', function() require('telescope.builtin').oldfiles(theme) end,
+vim.keymap.set('n', '<leader>r', function() ts_builtin.oldfiles(theme) end,
   { desc = 'find [r]ecently opened files' })
-vim.keymap.set('n', '<leader>?', require('telescope.builtin').help_tags, { desc = '[?] search help' })
-vim.keymap.set('n', '<leader>sw', require('telescope.builtin').grep_string, { desc = '[s]earch current [w]ord' })
-vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[s]earch by [g]rep' })
-vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[s]earch [d]iagnostics' })
-vim.keymap.set('n', '<leader>sf', function() require('telescope.builtin').current_buffer_fuzzy_find(theme) end,
+vim.keymap.set('n', '<leader>?', ts_builtin.help_tags, { desc = '[?] search help' })
+vim.keymap.set('n', '<leader>sw', ts_builtin.grep_string, { desc = '[s]earch current [w]ord' })
+vim.keymap.set('n', '<leader>sg', ts_builtin.live_grep, { desc = '[s]earch by [g]rep' })
+vim.keymap.set('n', '<leader>sd', ts_builtin.diagnostics, { desc = '[s]earch [d]iagnostics' })
+vim.keymap.set('n', '<leader>sf', function() ts_builtin.current_buffer_fuzzy_find(theme) end,
   { desc = '[s]earch [f]uzzily in current buffer]' })
 
 -- [[ Configure Treesitter ]]
 -- See `:help nvim-treesitter`
-require('nvim-treesitter.configs').setup {
+require('nvim-treesitter.configs').setup({
   -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'typescript', 'json', 'jsonc', 'markdown', 'bash' },
-
+  ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'typescript', 'json', 'jsonc', 'markdown', 'bash', 'vimdoc' },
   highlight = { enable = true },
-  textobjects = {
-    swap = {
-      enable = true,
-      swap_next = {
-        ['<leader>sn'] = '@parameter.inner',
-      },
-      swap_previous = {
-        ['<leader>sp'] = '@parameter.inner',
-      },
-    },
-  },
-}
+})
 
 -- LSP settings.
 local lspconfig = require('lspconfig')
@@ -315,7 +257,6 @@ lspconfig.util.default_config = vim.tbl_extend(
         end
       end, { desc = 'format current buffer with LSP' })
     end,
-
     -- nvim-cmp supports additional completion capabilities
     capabilities = require('cmp_nvim_lsp').default_capabilities(vim.lsp.protocol.make_client_capabilities())
   }
@@ -326,12 +267,12 @@ require('mason').setup()
 
 require('mason-lspconfig').setup({
   -- Ensure these servers are installed
-  ensure_installed = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'sumneko_lua' },
+  ensure_installed = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'lua_ls' },
 })
 
 -- Server custom options
 local server_custom_opts = {
-  sumneko_lua = function(opts)
+  lua_ls = function(opts)
     -- Make runtime files discoverable to the server
     local runtime_path = vim.split(package.path, ';')
     table.insert(runtime_path, 'lua/?.lua')
@@ -347,7 +288,10 @@ local server_custom_opts = {
         diagnostics = {
           globals = { 'vim' },
         },
-        workspace = { library = vim.api.nvim_get_runtime_file('', true) },
+        workspace = {
+          library = vim.api.nvim_get_runtime_file('', true),
+          checkThirdParty = false
+        },
         -- Do not send telemetry data containing a randomized but unique identifier
         telemetry = { enable = false, },
       },
@@ -408,7 +352,7 @@ cmp.setup {
     { name = 'luasnip' },
     { name = 'nvim_lsp_signature_help' },
     { name = 'path' },
-    { name = 'buffer', keyword_length = 4 },
+    { name = 'buffer',                 keyword_length = 4 },
   },
   formatting = {
     fields = { 'menu', 'abbr', 'kind' },
@@ -424,9 +368,6 @@ cmp.setup {
     end,
   },
 }
--- ToDo
--- Some decent git plugin
--- Use telescope git builtins
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

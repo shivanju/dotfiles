@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 now=$(date +%s)
-lbl=""
+lbl="󰔛"
 col_running="#FFB3B3"
 col_paused="#FFE9AE"
 col_stopped="#79B4B7"
@@ -29,7 +29,7 @@ if [ "$_state" == "stopped" ]; then
 else
 	if [ "$_state" == "paused" ]; then
 		_current_pause=$(($now - $_pause_start_time))
-		lbl=""
+		lbl="󱫟"
 	else
 		elapsed=$(($now - $_start_time - $_total_pause))
 		remaining=$(($_duration - $elapsed))
