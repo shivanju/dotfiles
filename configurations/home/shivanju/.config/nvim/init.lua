@@ -26,6 +26,7 @@ require('lazy').setup({
       contrast = 'hard' -- can be "hard", "soft" or empty string
     }
   },
+  'nvim-tree/nvim-web-devicons',
   { 'folke/which-key.nvim',   opts = {} },
   { 'numToStr/Comment.nvim',  opts = {} },
   { 'kylechui/nvim-surround', version = "*", opts = {} },
@@ -39,7 +40,7 @@ require('lazy').setup({
     'nvim-lualine/lualine.nvim',
     opts = {
       options = {
-        icons_enabled = false,
+        icons_enabled = true,
         theme = 'gruvbox',
         component_separators = '|',
         section_separators = '',
@@ -57,41 +58,31 @@ require('lazy').setup({
       show_current_context = false
     }
   },
-  {
-    "folke/trouble.nvim",
-    opts = {
-      -- settings without a patched font or icons
-      icons = false,
-      fold_open = "v",      -- icon used for open folds
-      fold_closed = ">",    -- icon used for closed folds
-      indent_lines = false, -- add an indent guide below the fold icons
-      signs = {
-        -- icons / text used for a diagnostic
-        error = "error",
-        warning = "warn",
-        hint = "hint",
-        information = "info"
-      },
-      use_diagnostic_signs = false -- enabling this will use the signs defined in your lsp client
-    }
-  },
-  { 'j-hui/fidget.nvim',        opts = {} },
-  { 'folke/neodev.nvim',        opts = {} },
-  { 'kyazdani42/nvim-tree.lua', opts = {} },
-  'nvim-treesitter/nvim-treesitter',
-  'nvim-tree/nvim-web-devicons',
-  'williamboman/mason.nvim',
+  { 'rmagatti/auto-session',           opts = {} },
+  { "folke/trouble.nvim",              opts = {} },
+  { 'kyazdani42/nvim-tree.lua',        opts = {} },
+  { 'folke/neodev.nvim',               opts = {} },
+  { 'williamboman/mason.nvim',         opts = {} },
+  { 'nvim-treesitter/nvim-treesitter', build = ":TSUpdate" },
   'williamboman/mason-lspconfig.nvim',
   'neovim/nvim-lspconfig',
   'hrsh7th/nvim-cmp',
   'hrsh7th/cmp-nvim-lsp',
   'hrsh7th/cmp-path',
   'hrsh7th/cmp-buffer',
-  'hrsh7th/cmp-nvim-lsp-signature-help',
-  { 'L3MON4D3/LuaSnip', version = 'v1.*', opts = {} },
   'saadparwaiz1/cmp_luasnip',
+  { 'L3MON4D3/LuaSnip',              version = 'v1.*', opts = {} },
+  'rafamadriz/friendly-snippets',
   'nvim-lua/plenary.nvim',
-  'nvim-telescope/telescope.nvim',
+  'lewis6991/gitsigns.nvim',
+  { 'nvim-telescope/telescope.nvim', version = '*' },
+  {
+    'nvim-telescope/telescope-fzf-native.nvim',
+    build = 'make',
+    cond = function()
+      return vim.fn.executable 'make' == 1
+    end,
+  },
 })
 
 -- set colorscheme
@@ -138,10 +129,10 @@ vim.o.winbar = '%n %m%F'                    -- Show buffer info on the winbar
 -- See `:help vim.keymap.set()`
 vim.keymap.set('i', 'jk', '<Esc>', { silent = true })
 vim.keymap.set('i', 'kj', '<Esc>', { silent = true })
-vim.keymap.set('i', '<M-h>', '<C-o>h', { silent = true })
-vim.keymap.set('i', '<M-l>', '<C-o>a', { silent = true })
-vim.keymap.set('i', '<M-a>', '<C-o>^', { silent = true })
-vim.keymap.set('i', '<M-e>', '<C-o>$', { silent = true })
+vim.keymap.set('i', '<C-h>', '<Left>', { silent = true })
+vim.keymap.set('i', '<C-j>', '<Down>', { silent = true })
+vim.keymap.set('i', '<C-k>', '<Up>', { silent = true })
+vim.keymap.set('i', '<C-l>', '<Right>', { silent = true })
 vim.keymap.set('n', 'n', 'nzz', { silent = true })
 vim.keymap.set('n', 'N', 'Nzz', { silent = true })
 vim.keymap.set('n', '<M-b>', vim.cmd.bn, { silent = true, desc = 'goto next buffer' })
@@ -161,11 +152,21 @@ vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'goto next diagnost
 vim.keymap.set('n', '<leader>df', vim.diagnostic.open_float, { desc = 'show diagnostic in floating window' })
 vim.keymap.set('n', '<leader>dl', vim.diagnostic.setloclist, { desc = 'send buffer diagnostics to local list' })
 
+-- Trouble keymaps
+vim.keymap.set('n', '<leader>tt', '<cmd>TroubleToggle<cr>', { silent = true, noremap = true })
+vim.keymap.set('n', '<leader>tw', '<cmd>TroubleToggle workspace_diagnostics<cr>', { silent = true, noremap = true })
+vim.keymap.set('n', '<leader>td', '<cmd>TroubleToggle document_diagnostics<cr>', { silent = true, noremap = true })
+vim.keymap.set('n', '<leader>tl', '<cmd>TroubleToggle loclist<cr>', { silent = true, noremap = true })
+vim.keymap.set('n', '<leader>tq', '<cmd>TroubleToggle quickfix<cr>', { silent = true, noremap = true })
+
 vim.keymap.set('n', '<leader>e', vim.cmd.NvimTreeToggle, { desc = 'open nvim-tree' })
 
 -- Global diagnostic config
 vim.diagnostic.config({
-  virtual_text = false
+  virtual_text = {
+    severity = vim.diagnostic.severity.ERROR
+  },
+  signs = false
 })
 
 -- [[ Highlight on yank ]]
@@ -179,49 +180,87 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   pattern = '*',
 })
 
+-- [[ Configure gitsigns ]]
+require('gitsigns').setup({
+  signs = {
+    add = { text = '▎' },
+    change = { text = '▎' },
+    delete = { text = '➤' },
+    topdelete = { text = '➤' },
+    changedelete = { text = '▎' },
+  },
+  on_attach = function(bufnr)
+    local gs = package.loaded.gitsigns
+
+    local function map(mode, l, r, opts)
+      opts = opts or {}
+      opts.buffer = bufnr
+      vim.keymap.set(mode, l, r, opts)
+    end
+
+    map('n', ']c', function()
+      if vim.wo.diff then return ']c' end
+      vim.schedule(function() gs.next_hunk() end)
+      return '<Ignore>'
+    end, { expr = true })
+    map('n', '[c', function()
+      if vim.wo.diff then return '[c' end
+      vim.schedule(function() gs.prev_hunk() end)
+      return '<Ignore>'
+    end, { expr = true })
+    map('n', '<leader>hp', gs.preview_hunk_inline)
+    map('n', '<leader>hr', gs.reset_hunk)
+  end
+})
+
 -- [[ Configure Telescope ]]
 -- See `:help telescope` and `:help telescope.setup()`
+local trouble = require('trouble.providers.telescope')
+local ts_action = require('telescope.actions')
 require('telescope').setup({
   defaults = {
+    layout_strategy = "center",
+    layout_config = {
+      anchor = "N",
+      width = 0.7,
+      preview_cutoff = 1,
+    },
+    borderchars = {
+      prompt = { '─', '│', ' ', '│', '┌', '┐', '│', '│' },
+      results = { '─', '│', '─', '│', '├', '┤', '┘', '└' },
+      preview = { '─', '│', '─', '│', '┌', '┐', '┘', '└' },
+    },
+    sorting_strategy = "ascending",
     mappings = {
       i = {
-        ["<C-j>"] = require('telescope.actions').move_selection_next,
-        ["<C-k>"] = require('telescope.actions').move_selection_previous,
+        ["<esc>"] = ts_action.close,
+        ["<C-j>"] = ts_action.move_selection_next,
+        ["<C-k>"] = ts_action.move_selection_previous,
+        ["<C-t>"] = trouble.open_with_trouble,
       },
       n = {
-        ["<C-j>"] = require('telescope.actions').move_selection_next,
-        ["<C-k>"] = require('telescope.actions').move_selection_previous,
+        ["<C-j>"] = ts_action.move_selection_next,
+        ["<C-k>"] = ts_action.move_selection_previous,
+        ["<C-t>"] = trouble.open_with_trouble,
       }
     }
   }
 })
 
--- You can pass additional configuration to telescope to change theme, layout, etc.
-local theme = require('telescope.themes').get_ivy({
-  previewer = false,
-})
+pcall(require('telescope').load_extension, 'fzf')
+
 -- See `:help telescope.builtin`
 local ts_builtin = require('telescope.builtin')
-vim.keymap.set('n', '<leader>b', function() ts_builtin.buffers(theme) end,
-  { desc = 'find current [b]uffers' })
-vim.keymap.set('n', '<leader>f', function() ts_builtin.find_files(theme) end,
-  { desc = 'find [f]iles' })
-vim.keymap.set('n', '<leader>r', function() ts_builtin.oldfiles(theme) end,
-  { desc = 'find [r]ecently opened files' })
+
+vim.keymap.set('n', '<leader>b', ts_builtin.buffers, { desc = 'find current [b]uffers' })
+vim.keymap.set('n', '<leader>f', ts_builtin.find_files, { desc = 'find [f]iles' })
+vim.keymap.set('n', '<leader>r', ts_builtin.oldfiles, { desc = 'find [r]ecently opened files' })
 vim.keymap.set('n', '<leader>?', ts_builtin.help_tags, { desc = '[?] search help' })
 vim.keymap.set('n', '<leader>sw', ts_builtin.grep_string, { desc = '[s]earch current [w]ord' })
 vim.keymap.set('n', '<leader>sg', ts_builtin.live_grep, { desc = '[s]earch by [g]rep' })
 vim.keymap.set('n', '<leader>sd', ts_builtin.diagnostics, { desc = '[s]earch [d]iagnostics' })
-vim.keymap.set('n', '<leader>sf', function() ts_builtin.current_buffer_fuzzy_find(theme) end,
-  { desc = '[s]earch [f]uzzily in current buffer]' })
-
--- [[ Configure Treesitter ]]
--- See `:help nvim-treesitter`
-require('nvim-treesitter.configs').setup({
-  -- Add languages to be installed here that you want installed for treesitter
-  ensure_installed = { 'c', 'cpp', 'lua', 'python', 'rust', 'typescript', 'json', 'jsonc', 'markdown', 'bash', 'vimdoc' },
-  highlight = { enable = true },
-})
+vim.keymap.set('n', '<leader>sf', ts_builtin.current_buffer_fuzzy_find,
+  { desc = '[s]earch [f]uzzily in current buffer' })
 
 -- LSP settings.
 local lspconfig = require('lspconfig')
@@ -241,20 +280,16 @@ lspconfig.util.default_config = vim.tbl_extend(
 
       nmap('K', vim.lsp.buf.hover, 'hover documentation')
       nmap('<C-k>', vim.lsp.buf.signature_help, 'signature documentation')
-      nmap('gd', vim.lsp.buf.definition, '[g]oto [d]efinition')
-      nmap('gT', vim.lsp.buf.type_definition, '[g]oto [T]ype definition')
-      nmap('gI', vim.lsp.buf.implementation, '[g]oto [I]mplementation')
       nmap('<leader>n', vim.lsp.buf.rename, 're[n]ame')
       nmap('<leader>a', vim.lsp.buf.code_action, 'code [a]ction')
-      nmap('gr', require('telescope.builtin').lsp_references, '[g]oto [r]eferences')
+      nmap('gd', ts_builtin.lsp_definitions, '[g]oto [d]efinition')
+      nmap('gT', ts_builtin.lsp_type_definitions, '[g]oto [T]ype definition')
+      nmap('gI', ts_builtin.lsp_implementations, '[g]oto [I]mplementation')
+      nmap('gr', ts_builtin.lsp_references, '[g]oto [r]eferences')
 
       -- Create a command `:Format` local to the LSP buffer
       vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-        if vim.lsp.buf.format then
-          vim.lsp.buf.format()
-        elseif vim.lsp.buf.formatting then
-          vim.lsp.buf.formatting()
-        end
+        vim.lsp.buf.format()
       end, { desc = 'format current buffer with LSP' })
     end,
     -- nvim-cmp supports additional completion capabilities
@@ -262,12 +297,9 @@ lspconfig.util.default_config = vim.tbl_extend(
   }
 )
 
--- Setup mason so it can manage external tooling e.g. LSP servers
-require('mason').setup()
-
 require('mason-lspconfig').setup({
   -- Ensure these servers are installed
-  ensure_installed = { 'clangd', 'rust_analyzer', 'pyright', 'tsserver', 'lua_ls' },
+  ensure_installed = { 'rust_analyzer', 'pyright', 'tsserver', 'lua_ls', 'prismals' },
 })
 
 -- Server custom options
@@ -312,6 +344,10 @@ end
 -- nvim-cmp setup
 local cmp = require 'cmp'
 local luasnip = require 'luasnip'
+luasnip.config.setup {}
+
+-- Load snippets
+require("luasnip.loaders.from_vscode").lazy_load()
 
 cmp.setup {
   snippet = {
@@ -350,9 +386,8 @@ cmp.setup {
   sources = {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
-    { name = 'nvim_lsp_signature_help' },
     { name = 'path' },
-    { name = 'buffer',                 keyword_length = 4 },
+    { name = 'buffer',  keyword_length = 4 },
   },
   formatting = {
     fields = { 'menu', 'abbr', 'kind' },
@@ -368,6 +403,14 @@ cmp.setup {
     end,
   },
 }
+
+-- [[ Configure Treesitter ]]
+-- See `:help nvim-treesitter`
+require('nvim-treesitter.configs').setup({
+  -- Add languages to be installed here that you want installed for treesitter
+  ensure_installed = { 'lua', 'python', 'rust', 'typescript', 'markdown', 'bash', 'vimdoc', 'prisma' },
+  highlight = { enable = true },
+})
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
