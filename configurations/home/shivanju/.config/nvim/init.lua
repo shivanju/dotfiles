@@ -20,11 +20,8 @@ vim.opt.rtp:prepend(lazypath)
 
 require('lazy').setup({
   {
-    'ellisonleao/gruvbox.nvim',
+    'sainnhe/gruvbox-material',
     priority = 1000,
-    opts = {
-      contrast = 'hard' -- can be "hard", "soft" or empty string
-    }
   },
   'nvim-tree/nvim-web-devicons',
   { 'folke/which-key.nvim',   opts = {} },
@@ -41,7 +38,7 @@ require('lazy').setup({
     opts = {
       options = {
         icons_enabled = true,
-        theme = 'gruvbox',
+        theme = 'gruvbox-material',
         component_separators = '|',
         section_separators = '',
         path = 0
@@ -58,7 +55,6 @@ require('lazy').setup({
       show_current_context = false
     }
   },
-  { 'rmagatti/auto-session',           opts = {} },
   { "folke/trouble.nvim",              opts = {} },
   { 'kyazdani42/nvim-tree.lua',        opts = {} },
   { 'folke/neodev.nvim',               opts = {} },
@@ -71,10 +67,31 @@ require('lazy').setup({
   'hrsh7th/cmp-path',
   'hrsh7th/cmp-buffer',
   'saadparwaiz1/cmp_luasnip',
-  { 'L3MON4D3/LuaSnip',              version = 'v1.*', opts = {} },
+  { 'L3MON4D3/LuaSnip',                version = 'v1.*', opts = {} },
   'rafamadriz/friendly-snippets',
   'nvim-lua/plenary.nvim',
-  'lewis6991/gitsigns.nvim',
+  { 'lewis6991/gitsigns.nvim',         opts = {} },
+  { 'sindrets/diffview.nvim',          opts = {} },
+  { 'shivanju/simple-session-manager', opts = {} },
+  { 'echasnovski/mini.bufremove',      version = '*',    opts = {} },
+  {
+    "NeogitOrg/neogit",
+    opts = {}
+  },
+  {
+    'akinsho/toggleterm.nvim',
+    version = "*",
+    opts = {
+      size = function(term)
+        if term.direction == "horizontal" then
+          return 18
+        elseif term.direction == "vertical" then
+          return vim.o.columns * 0.4
+        end
+      end,
+      open_mapping = [[<c-\>]],
+    }
+  },
   { 'nvim-telescope/telescope.nvim', version = '*' },
   {
     'nvim-telescope/telescope-fzf-native.nvim',
@@ -86,7 +103,7 @@ require('lazy').setup({
 })
 
 -- set colorscheme
-vim.cmd.colorscheme 'gruvbox'
+vim.cmd.colorscheme 'gruvbox-material'
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -135,9 +152,11 @@ vim.keymap.set('i', '<C-k>', '<Up>', { silent = true })
 vim.keymap.set('i', '<C-l>', '<Right>', { silent = true })
 vim.keymap.set('n', 'n', 'nzz', { silent = true })
 vim.keymap.set('n', 'N', 'Nzz', { silent = true })
+vim.keymap.set({ 'n', 'i' }, '<C-s>', vim.cmd.update, { silent = true, desc = 'save file' })
+vim.keymap.set({ 'n', 'i' }, '<M-F>', vim.cmd.Format, { silent = true, desc = 'format current buffer' })
 vim.keymap.set('n', '<M-b>', vim.cmd.bn, { silent = true, desc = 'goto next buffer' })
 vim.keymap.set('n', '<M-B>', vim.cmd.bp, { silent = true, desc = 'goto previous buffer' })
-vim.keymap.set('n', '<M-d>', vim.cmd.bd, { silent = true, desc = 'delete current buffer' })
+vim.keymap.set('n', '<M-d>', '<cmd>lua MiniBufremove.delete()<cr>', { silent = true, desc = 'delete current buffer' })
 vim.keymap.set('n', '<M-a>', '<C-^>', { silent = true, desc = 'goto alternate buffer' })
 vim.keymap.set('n', '<M-t>', 'gt', { silent = true, desc = 'goto next tab' })
 vim.keymap.set('n', '<M-T>', 'gT', { silent = true, desc = 'goto previous tab' })
@@ -159,7 +178,8 @@ vim.keymap.set('n', '<leader>td', '<cmd>TroubleToggle document_diagnostics<cr>',
 vim.keymap.set('n', '<leader>tl', '<cmd>TroubleToggle loclist<cr>', { silent = true, noremap = true })
 vim.keymap.set('n', '<leader>tq', '<cmd>TroubleToggle quickfix<cr>', { silent = true, noremap = true })
 
-vim.keymap.set('n', '<leader>e', vim.cmd.NvimTreeToggle, { desc = 'open nvim-tree' })
+-- NvimTree
+vim.keymap.set('n', '<leader>e', vim.cmd.NvimTreeToggle, { desc = 'open file tree' })
 
 -- Global diagnostic config
 vim.diagnostic.config({
@@ -202,14 +222,14 @@ require('gitsigns').setup({
       if vim.wo.diff then return ']c' end
       vim.schedule(function() gs.next_hunk() end)
       return '<Ignore>'
-    end, { expr = true })
+    end, { expr = true, desc = "Jump to next change" })
     map('n', '[c', function()
       if vim.wo.diff then return '[c' end
       vim.schedule(function() gs.prev_hunk() end)
       return '<Ignore>'
-    end, { expr = true })
-    map('n', '<leader>hp', gs.preview_hunk_inline)
-    map('n', '<leader>hr', gs.reset_hunk)
+    end, { expr = true, desc = "Jump to previous change" })
+    map('n', '<leader>hp', gs.preview_hunk_inline, { desc = "Preview hunk inline" })
+    map('n', '<leader>hr', gs.reset_hunk, { desc = "Reset hunk" })
   end
 })
 
