@@ -64,16 +64,5 @@ END {
 	} else {
 		printf("%.1fG\n", used)	
 	}
-
-	# color
-	if (pct > 90) {
-		print("#FF7878")
-	} else if (pct > 80) {
-		print("#CC7351")
-	} else if (pct > 60) {
-		print("#F2D388")
-	} else {
-		print("#70AF85")
-	}
 }
 ' /proc/meminfo

@@ -1,217 +1,158 @@
-# Copy this to ~/.config/sway/config and edit it to your liking.
-#
+# Default config lives at ~/.config/sway/config
 # Read `man 5 sway` for a complete reference.
 
-### Variables
-#
-# Logo key. Use Mod1 for Alt.
 set $mod Mod4
-# Home row direction keys, like vim
 set $left h
 set $down j
 set $up k
 set $right l
-# Your preferred terminal emulator
-set $term alacritty
-# Your preferred application launcher
-# Note: pass the final command to swaymsg so that the resulting window can be opened
-# on the original workspace that the command was run on.
-set $menu wofi --show run | xargs swaymsg exec --
+set $term foot
+set $menu fuzzel
+set $explorer nemo
 
-### Run pure wayland session; Sadly this can't be used atm since electron (chromium) doesn't have native wayland support yet :(
-# xwayland disable
+# Misc configuration
+default_border none
+font pango:monospace .001
+workspace_auto_back_and_forth yes
 
-### Initialize notification daemon
-exec mako
+# Output configuration
+output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 
-### Misc configuration
-    # Font for window titles. Will also be used by the bar unless a different font
-    font pango:monospace 0
-    default_border none
-    titlebar_border_thickness 0
-    titlebar_padding 1
-    # switch workspace back and forth
-    workspace_auto_back_and_forth yes
-
-### Output configuration
-#
-# Default wallpaper (more resolutions are available in @datadir@/backgrounds/sway/)
-output * bg ~/Downloads/Wallpapers/fishing_by_lake_lockscreen.png fill
-#
-# Example configuration:
-#
-#   output HDMI-A-1 resolution 1920x1080 position 1920,0
-#
-# You can get the names of your outputs by running: swaymsg -t get_outputs
-set $laptop eDP-1
-bindswitch --reload --locked lid:on output $laptop disable
-bindswitch --reload --locked lid:off output $laptop enable
-
-exec_always ./clamshell_mode_sway_reload_fix.sh
-
-### Idle configuration
-#
-#
-
+## window rules
 # xwayland version
 for_window [class=".*"] inhibit_idle fullscreen
-
-# wayland vesion
+# wayland version
+for_window [floating] move position center
 for_window [app_id=".*"] inhibit_idle fullscreen
+for_window [title="Picture in picture"] floating enabled, sticky enabled
+for_window [app_id="pavucontrol-qt"] floating enabled
+for_window [app_id="blueman-manager"] floating enabled
+for_window [app_id="nm-connection-editor"] floating enabled
+for_window [app_id="^.*FileRoller$"] floating enabled
+for_window [title=".*Cloud Player - Audible.*"] floating enabled
+for_window [app_id="nemo" title="Properties"] floating enabled
 
-exec swayidle -w \
-        timeout 300 'swaylock -f -i ~/Downloads/Wallpapers/fishing_by_lake_lockscreen.png' \
-        timeout 420 'swaymsg "output * dpms off"' \
-             resume 'swaymsg "output * dpms on"' \
-        before-sleep 'swaylock -f -i ~/Downloads/Wallpapers/fishing_by_lake_lockscreen.png'
-#
 # This will lock your screen after 300 seconds of inactivity, then turn off
-# your displays after another 120 seconds, and turn your screens back on when
+# your displays after another 60 seconds, and turn your screens back on when
 # resumed. It will also lock your screen before your computer goes to sleep.
+exec swayidle -w \
+         timeout 300 'swaylock -f -c 000000' \
+         timeout 360 'swaymsg "output * power off"' \
+         resume 'swaymsg "output * power on"' \
+         before-sleep 'swaylock -f -c 000000'
+exec wl-paste --type text --watch cliphist -max-items 10 store
+exec wl-paste --type image --watch cliphist -max-items 10 store
 
-### Input configuration
-#
-#
-    input type:pointer {
-        natural_scroll enabled
-        dwt enabled
-    }
-    input type:touchpad {
-        natural_scroll enabled
-        dwt enabled
-        tap enabled
-    }
-#
-# You can get the names of your inputs by running: swaymsg -t get_inputs
-# Read `man 5 sway-input` for more information about this section.
+# Auth agent for GUI apps
+exec /usr/lib/polkit-kde-authentication-agent-1
 
-### Key bindings
-#
-# Basics:
-#
-    # Start a terminal
-    bindsym $mod+Return exec $term
+# Input configuration
+input type:pointer {
+    natural_scroll enabled
+    dwt enabled
+}
+input type:touchpad {
+    dwt enabled
+    tap enabled
+    natural_scroll enabled
+    scroll_factor 0.5
+    pointer_accel 0.2
+}
 
-    # Kill focused window
-    bindsym $mod+Shift+q kill
+# Key bindings
+bindsym $mod+Return exec $term
+bindsym $mod+e exec $explorer
+bindsym $mod+d exec $menu
+bindsym $mod+x exec swaylock -f -c 000000
+bindsym $mod+Print exec grim -g "$(slurp)" - | swappy -f -
+bindsym Print exec grim - | swappy -f -
+bindsym $mod+Shift+c exec cliphist list | fuzzel -d | cliphist decode | wl-copy
+bindsym $mod+Shift+x exec nwg-bar
 
-    # Start your launcher
-    bindsym $mod+d exec $menu
+bindsym $mod+q kill
+bindsym $mod+Shift+Space floating toggle
+bindsym $mod+Space focus mode_toggle
+bindsym $mod+p focus parent
+bindsym $mod+f fullscreen
+bindsym $mod+z splith
+bindsym $mod+v splitv
+bindsym $mod+s layout stacking
+bindsym $mod+t layout tabbed
+bindsym $mod+Tab layout toggle split
 
-    # Drag floating windows by holding down $mod and left mouse button.
-    # Resize them with right mouse button + $mod.
-    # Despite the name, also works for non-floating windows.
-    # Change normal to inverse to use left mouse button for resizing and right
-    # mouse button for dragging.
-    floating_modifier $mod normal
+# Drag floating windows by holding down $mod and left mouse button.
+# Resize them with right mouse button + $mod.
+# Despite the name, also works for non-floating windows.
+# Change normal to inverse to use left mouse button for resizing and right
+# mouse button for dragging.
+floating_modifier $mod normal
 
-    # Reload the configuration file
-    bindsym $mod+Shift+c reload
+# Reload the configuration file
+bindsym $mod+Shift+r reload
 
-    # Exit sway (logs you out of your Wayland session)
-    bindsym $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
-#
+# Exit sway (logs you out of your Wayland session)
+bindsym $mod+Shift+e exec swaynag -t warning -m 'Exit Sway session?' -B 'Yes, exit sway' 'swaymsg exit'
+
+
 # Moving around:
-#
-    # Move your focus around
-    bindsym $mod+$left focus left
-    bindsym $mod+$down focus down
-    bindsym $mod+$up focus up
-    bindsym $mod+$right focus right
-    # Or use $mod+[up|down|left|right]
-    bindsym $mod+Left focus left
-    bindsym $mod+Down focus down
-    bindsym $mod+Up focus up
-    bindsym $mod+Right focus right
+# Move your focus around
+bindsym $mod+$left focus left
+bindsym $mod+$down focus down
+bindsym $mod+$up focus up
+bindsym $mod+$right focus right
+# Or use $mod+[up|down|left|right]
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
 
-    # Move the focused window with the same, but add Shift
-    bindsym $mod+Shift+$left move left
-    bindsym $mod+Shift+$down move down
-    bindsym $mod+Shift+$up move up
-    bindsym $mod+Shift+$right move right
-    # Ditto, with arrow keys
-    bindsym $mod+Shift+Left move left
-    bindsym $mod+Shift+Down move down
-    bindsym $mod+Shift+Up move up
-    bindsym $mod+Shift+Right move right
-#
+# Move the focused window with the same, but add Shift
+bindsym $mod+Shift+$left move left
+bindsym $mod+Shift+$down move down
+bindsym $mod+Shift+$up move up
+bindsym $mod+Shift+$right move right
+# Ditto, with arrow keys
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
 # Workspaces:
-#
-    set $ws1 "1:"
-    set $ws2 "2:"
-    set $ws3 "3:"
-    set $ws4 "4:"
-    set $ws5 "5:"
-    set $ws6 "6:"
-    set $ws7 "7"
-    set $ws8 "8"
-    set $ws9 "9"
-    set $ws10 "10"
+# Switch to workspace
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+# Move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+# Note: workspaces can have any name you want, not just numbers.
+# We just use 1-10 as the default.
 
-    # Switch to workspace
-    bindsym $mod+1 workspace $ws1
-    bindsym $mod+2 workspace $ws2
-    bindsym $mod+3 workspace $ws3
-    bindsym $mod+4 workspace $ws4
-    bindsym $mod+5 workspace $ws5
-    bindsym $mod+6 workspace $ws6
-    bindsym $mod+7 workspace $ws7
-    bindsym $mod+8 workspace $ws8
-    bindsym $mod+9 workspace $ws9
-    bindsym $mod+0 workspace $ws10
-    # Move focused container to workspace
-    bindsym $mod+Shift+1 move container to workspace $ws1
-    bindsym $mod+Shift+2 move container to workspace $ws2
-    bindsym $mod+Shift+3 move container to workspace $ws3
-    bindsym $mod+Shift+4 move container to workspace $ws4
-    bindsym $mod+Shift+5 move container to workspace $ws5
-    bindsym $mod+Shift+6 move container to workspace $ws6
-    bindsym $mod+Shift+7 move container to workspace $ws7
-    bindsym $mod+Shift+8 move container to workspace $ws8
-    bindsym $mod+Shift+9 move container to workspace $ws9
-    bindsym $mod+Shift+0 move container to workspace $ws10
-    # Note: workspaces can have any name you want, not just numbers.
-    # We just use 1-10 as the default.
-#
-# Layout stuff:
-#
-    # You can "split" the current object of your focus with
-    # $mod+b or $mod+v, for horizontal and vertical splits
-    # respectively.
-    bindsym $mod+b splith
-    bindsym $mod+v splitv
-
-    # Switch the current container between different layout styles
-    bindsym $mod+s layout stacking
-    bindsym $mod+w layout tabbed
-    bindsym $mod+e layout toggle split
-
-    # Make the current focus fullscreen
-    bindsym $mod+f fullscreen
-
-    # Toggle the current focus between tiling and floating mode
-    bindsym $mod+Shift+space floating toggle
-
-    # Swap focus between the tiling area and the floating area
-    bindsym $mod+space focus mode_toggle
-
-    # Move focus to the parent container
-    bindsym $mod+a focus parent
-#
 # Scratchpad:
-#
-    # Sway has a "scratchpad", which is a bag of holding for windows.
-    # You can send windows there and get them back later.
+# Sway has a "scratchpad", which is a bag of holding for windows.
+# You can send windows there and get them back later.
+# Move the currently focused window to the scratchpad
+bindsym $mod+Shift+w move scratchpad
+# Show the next scratchpad window or hide the focused scratchpad window.
+# If there are multiple scratchpad windows, this command cycles through them.
+bindsym $mod+w scratchpad show
 
-    # Move the currently focused window to the scratchpad
-    bindsym $mod+Shift+minus move scratchpad
-
-    # Show the next scratchpad window or hide the focused scratchpad window.
-    # If there are multiple scratchpad windows, this command cycles through them.
-    bindsym $mod+minus scratchpad show
-#
 # Resizing containers:
-#
 mode "resize" {
     # left will shrink the containers width
     # right will grow the containers width
@@ -233,47 +174,17 @@ mode "resize" {
     bindsym Escape mode "default"
 }
 bindsym $mod+r mode "resize"
-#
+
 # Function keys:
-#
-    # Volume control
-    bindsym XF86AudioRaiseVolume exec amixer -q -D pulse sset Master 5%+ && pkill -RTMIN+10 i3blocks
-    bindsym XF86AudioLowerVolume exec amixer -q -D pulse sset Master 5%- && pkill -RTMIN+10 i3blocks
-    bindsym XF86AudioMute exec amixer -q -D pulse sset Master toggle && pkill -RTMIN+10 i3blocks
+# Volume control
+bindsym XF86AudioRaiseVolume exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%+
+bindsym XF86AudioLowerVolume exec wpctl set-volume -l 1.0 @DEFAULT_AUDIO_SINK@ 5%-
+bindsym XF86AudioMute exec wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle
 
-    # Use brightnessctl to control brightness
-    bindsym XF86MonBrightnessUp exec brightnessctl s 5%+ && pkill -RTMIN+11 i3blocks
-    bindsym XF86MonBrightnessDown exec brightnessctl s 5%- && pkill -RTMIN+11 i3blocks
-#
-# Screen lock
-#
-    bindsym $mod+Shift+x exec swaylock -f -i ~/Downloads/Wallpapers/fishing_by_lake_lockscreen.png
+# Use brightnessctl to control brightness
+bindsym XF86MonBrightnessUp exec brightnessctl -q s 5%+
+bindsym XF86MonBrightnessDown exec brightnessctl -q s 5%-
 
-#
-# Status Bar:
-#
-# Read `man 5 sway-bar` for more information about this section.
-bar {
-    font pango:Inconsolata 12
-    position top
-    # When the status_command prints a new line to stdout, swaybar updates.
-    status_command i3blocks
-    colors {
-        statusline #ffffff
-        background #252525
-                           #border bground text
-        focused_workspace  #4C7899 #338BA2 #FFFFFF
-        active_workspace   #333333 #222222 #FFFFFF
-        inactive_workspace #333333 #222222 #888888
-        urgent_workspace   #2F343A #900000 #FFFFFF
-        binding_mode       #2F343A #900000 #FFFFFF
-    }
-    tray_bindsym button2 ContextMenu
-}
+bar swaybar_command waybar
 
-# Enable floating for certain types of windows
-# More info: https://bugzilla.mozilla.org/show_bug.cgi?id=1590661
-for_window [title="\ -\ Sharing\ Indicator$"] floating enable
-for_window [title="Picture-in-Picture"] floating enable
-
-include @sysconfdir@/sway/config.d/*
+include /etc/sway/config.d/*

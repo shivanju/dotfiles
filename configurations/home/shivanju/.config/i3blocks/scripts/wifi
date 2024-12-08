@@ -28,7 +28,6 @@ fi
 if [[ "$(cat /sys/class/net/$INTERFACE/operstate)" = 'down' ]]; then
     echo "down"
     echo "down"
-    echo "#FF7878"
     exit
 fi
 
@@ -48,13 +47,3 @@ fi
 echo $WLAN_INFO # full text
 echo $WLAN_INFO # short text
 
-# color
-if [[ $QUALITY -ge 80 ]]; then
-    echo "#70AF85"
-elif [[ $QUALITY -ge 60 ]]; then
-    echo "#F2D388"
-elif [[ $QUALITY -ge 40 ]]; then
-    echo "#CC7351"
-else
-    echo "#FF7878"
-fi

@@ -6,6 +6,5 @@ case $BLOCK_BUTTON in
 esac
 
 val=$(brightnessctl -m | awk -F , '{print $4}')
-echo $LABEL$val #full_text
-echo $LABEL$val #short_text
-echo "#EEBB4D"
+echo "$LABEL$val" #full_text
+echo "$LABEL$val" #short_text

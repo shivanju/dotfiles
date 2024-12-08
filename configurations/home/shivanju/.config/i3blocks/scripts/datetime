@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
 time=$(date +%a' '%b-%d' '%H:%M)
-echo $time
-echo $time
-echo "#7393A7"
+echo "$time"
+echo "$time"

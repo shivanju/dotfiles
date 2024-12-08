@@ -4,25 +4,11 @@ align=center
 default_color=#DDDDDD
 markup=pango
 
-[sway-focusedwindow]
-command=$SCRIPT_DIR/sway_window 70 right
-interval=persist
-
-[timer]
-_state=stopped
-_duration=1500
-command=$SCRIPT_DIR/timer
-interval=1
-format=json
-
 [volume]
 command=$SCRIPT_DIR/volume
 LABEL=
 interval=once
 signal=10
-STEP=5%
-#MIXER=[determined automatically]
-#SCONTROL=[determined automatically]
 
 [brightness_wayland]
 command=$SCRIPT_DIR/brightness_wayland
@@ -31,15 +17,10 @@ interval=once
 signal=11
 STEP=5
 
-[bluelight_wayland]
-command=$SCRIPT_DIR/bluelight_wayland
-LABEL=
-interval=once
-
 [wifi]
 command=$SCRIPT_DIR/wifi
 label=
-INTERFACE=wlp1s0
+INTERFACE=wlo1
 interval=10
 
 [cpu_usage]

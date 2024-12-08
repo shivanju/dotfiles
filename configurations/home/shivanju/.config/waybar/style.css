@@ -1,0 +1,53 @@
+* {
+    border: none;
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    min-height: 0;
+}
+
+window#waybar {
+    background: rgba(40, 40, 40, 1.0);
+    color: #bbbbbb;
+}
+
+tooltip {
+  background: rgba(43, 48, 59, 1.0);
+  border: 2px solid rgba(100, 114, 125, 1.0);
+  border-radius: 10px;
+}
+
+tooltip label {
+  color: white;
+}
+
+#workspaces, #pulseaudio, #backlight, #network, #cpu, #memory, #battery, #clock, #tray {
+    color: #bbbbbb;
+    padding: 0 5px;
+    border: 2px solid rgba(100, 114, 125, 1.0);
+    border-radius: 7px;
+}
+
+#workspaces button {
+    padding: 0 2px;
+    color: #bbbbbb;
+}
+
+#workspaces button.focused {
+    background: #64727D;
+}
+
+#workspaces button.urgent {
+    background: #AA727D;
+}
+
+#battery.charging {
+    color: #07cff7;
+}
+
+#battery.plugged {
+    color: #09f285;
+}
+
+#tray {
+    border-radius: 30px;
+}

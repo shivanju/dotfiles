@@ -5,10 +5,3 @@ cpu_usage=$(mpstat 1 1 | head -n 4 | tail -n 1 | awk '{print 100 - int($NF)}')
 printf "%s%02d%%\n" "$LABEL" "$cpu_usage"
 printf "%s%02d%%\n" "$LABEL" "$cpu_usage"
 
-if [[ $cpu_usage -ge 80 ]]; then
-    echo "#FF7878"
-elif [[ $cpu_usage -ge 50 ]]; then
-    echo "#F2D388"
-else
-    echo "#70AF85"
-fi
