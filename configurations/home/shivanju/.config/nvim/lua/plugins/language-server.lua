@@ -1,9 +1,10 @@
 return {
 	"neovim/nvim-lspconfig",
 	dependencies = {
-		"williamboman/mason.nvim",
+		{ "williamboman/mason.nvim", opts = {} },
 		"williamboman/mason-lspconfig.nvim",
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
+		"hrsh7th/cmp-nvim-lsp",
 		{ "j-hui/fidget.nvim", opts = {} },
 	},
 	config = function()
@@ -15,26 +16,37 @@ return {
 				end
 
 				local builtin = require("telescope.builtin")
-				nmap("K", vim.lsp.buf.hover, "hover documentation")
-				nmap("<C-k>", vim.lsp.buf.signature_help, "signature documentation")
-				nmap("<F2>", vim.lsp.buf.rename, "rename")
-				nmap("<leader>ca", vim.lsp.buf.code_action, "code action")
-				nmap("gD", vim.lsp.buf.declaration, "goto declaration")
-				nmap("gd", builtin.lsp_definitions, "goto definitions")
-				nmap("gT", builtin.lsp_type_definitions, "goto type definitions")
-				nmap("gI", builtin.lsp_implementations, "goto implementations")
-				nmap("gr", builtin.lsp_references, "goto references")
+				nmap("gd", builtin.lsp_definitions, "Goto definitions")
+				nmap("gr", builtin.lsp_references, "Goto references")
+				nmap("gT", builtin.lsp_type_definitions, "Goto type definitions")
+				nmap("gI", builtin.lsp_implementations, "Goto implementations")
+				nmap("gD", vim.lsp.buf.declaration, "Goto declaration")
+				nmap("K", vim.lsp.buf.hover, "Hover documentation")
+				nmap("<C-k>", vim.lsp.buf.signature_help, "Signature documentation")
+				nmap("<leader>lr", vim.lsp.buf.rename, "Rename")
+				nmap("<leader>la", vim.lsp.buf.code_action, "Code action")
 
 				local client = vim.lsp.get_client_by_id(event.data.client_id)
-				if client and client.server_capabilities.documentHighlightProvider then
+				if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+					local highlight_augroup = vim.api.nvim_create_augroup("LSPHighlight", { clear = false })
 					vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
 						buffer = event.buf,
+						group = highlight_augroup,
 						callback = vim.lsp.buf.document_highlight,
 					})
 
 					vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI" }, {
 						buffer = event.buf,
+						group = highlight_augroup,
 						callback = vim.lsp.buf.clear_references,
+					})
+
+					vim.api.nvim_create_autocmd("LspDetach", {
+						group = vim.api.nvim_create_augroup("LspDetachGroup", { clear = true }),
+						callback = function(event2)
+							vim.lsp.buf.clear_references()
+							vim.api.nvim_clear_autocmds({ group = highlight_augroup, buffer = event2.buf })
+						end,
 					})
 				end
 			end,
@@ -54,29 +66,18 @@ return {
 			prismals = {},
 			clangd = {},
 			lua_ls = {
+				single_file_support = false,
 				settings = {
 					Lua = {
-						runtime = { version = "LuaJIT" },
-						workspace = {
-							checkThirdParty = false,
-							-- Tells lua_ls where to find all the Lua files that you have loaded
-							-- for your neovim configuration.
-							library = {
-								"${3rd}/luv/library",
-								unpack(vim.api.nvim_get_runtime_file("", true)),
-							},
-						},
 						completion = {
 							callSnippet = "Replace",
 						},
-						-- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-						-- diagnostics = { disable = { 'missing-fields' } },
+						-- You can toggle below to enable/disable Lua_LS's noisy `missing-fields` warnings
+						diagnostics = { disable = { "missing-fields" } },
 					},
 				},
 			},
 		}
-
-		require("mason").setup()
 
 		-- You can add other tools here that you want Mason to install
 		-- for you, so that they are available from within Neovim.

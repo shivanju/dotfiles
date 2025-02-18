@@ -7,15 +7,11 @@ vim.g.maplocalleader = " "
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
--- Disable netrw
-vim.g.loaded_netrw = 1
-vim.g.loaded_netrwPlugin = 1
-
 -- [[ Setting options ]]
-require("config.options")
+require("base.options")
 
 -- [[ Basic Keymaps ]]
-require("config.keymaps")
+require("base.keymaps")
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 require("lazy-bootstrap")

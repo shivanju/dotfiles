@@ -15,7 +15,12 @@ return {
 			require("mini.bufremove").delete,
 			{ silent = true, desc = "delete current buffer" }
 		)
-		vim.keymap.set("n", "<leader>ll", require("mini.sessions").read, { silent = true, noremap = true })
+		vim.keymap.set(
+			"n",
+			"<leader>gl",
+			require("mini.sessions").read,
+			{ silent = true, noremap = true, desc = "load session" }
+		)
 
 		-- Restore NvimTree state on session load
 		vim.api.nvim_create_autocmd({ "BufEnter" }, {

@@ -26,11 +26,11 @@ vim.keymap.set("n", "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = tr
 
 -- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
+	desc = "Highlight when yanking (copying) text",
+	group = vim.api.nvim_create_augroup("YankHighlightGroup", { clear = true }),
 	callback = function()
 		vim.highlight.on_yank()
 	end,
-	group = vim.api.nvim_create_augroup("YankHighlight", { clear = true }),
-	pattern = "*",
 })
 
 -- [[ Misc ]]
@@ -41,4 +41,3 @@ vim.diagnostic.config({
 	},
 	signs = false,
 })
-

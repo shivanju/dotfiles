@@ -1,58 +1,17 @@
 require("lazy").setup({
-	require("config.plugins.colorscheme"),
-	"tpope/vim-sleuth",
+	require("plugins.colorscheme"),
+	"tpope/vim-sleuth", -- Automatically adjusts 'shiftwidth' and 'expandtab'
 	{ "numToStr/Comment.nvim", opts = {} },
-	{
-		"windwp/nvim-autopairs",
-		opts = {
-			enable_check_bracket_line = false,
-		},
-	},
-	{
-		"lukas-reineke/indent-blankline.nvim",
-		main = "ibl",
-		opts = {
-			scope = {
-				char = "┊",
-				show_start = false,
-				show_end = false,
-			},
-		},
-	},
-	{
-		"kyazdani42/nvim-tree.lua",
-		dependencies = { "nvim-tree/nvim-web-devicons" },
-		opts = {
-			view = {
-				side = "right",
-			},
-			filters = {
-				git_ignored = false,
-			},
-		},
-		keys = {
-			{ "<leader>e", "<cmd>NvimTreeToggle<CR>", desc = "open file tree" },
-		},
-	},
-	{ "sindrets/diffview.nvim", opts = {} },
-	{ "NeogitOrg/neogit", opts = {} },
-	require("config.plugins.gitsigns"),
+	require("plugins.auto-pairs"),
+	require("plugins.indent-blankline"),
+	require("plugins.nvim-tree"),
+	require("plugins.diffview"),
+	require("plugins.neogit"),
+	require("plugins.gitsigns"),
 	{ "folke/which-key.nvim", event = "VimEnter", opts = {} },
-	require("config.plugins.telescope"),
-	{
-		"stevearc/conform.nvim",
-		opts = {
-			notify_on_error = false,
-			format_after_save = {
-				timeout_ms = 500,
-				lsp_fallback = true,
-			},
-			formatters_by_ft = {
-				lua = { "stylua" },
-			},
-		},
-	},
-	require("config.plugins.completion"),
+	require("plugins.telescope"),
+	require("plugins.conform"),
+	require("plugins.completion"),
 	{
 		"akinsho/toggleterm.nvim",
 		version = "*",
@@ -80,21 +39,35 @@ require("lazy").setup({
 			},
 		},
 	},
-	require("config.plugins.mini"),
-	require("config.plugins.language-server"),
+	require("plugins.mini"),
+	require("plugins.language-server"),
 	{
 		"nvim-treesitter/nvim-treesitter",
 		build = ":TSUpdate",
-		config = function()
-			require("nvim-treesitter.configs").setup({
-				ensure_installed = { "bash", "c", "html", "lua", "markdown", "vim", "vimdoc" },
-				auto_install = true,
-				highlight = { enable = true },
-				indent = { enable = true },
-			})
-		end,
+		main = "nvim-treesitter.configs", -- Sets main module to use for opts
+		opts = {
+			ensure_installed = { "bash", "c", "html", "lua", "markdown", "vim", "vimdoc" },
+			auto_install = true,
+			highlight = {
+				enable = true,
+				-- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
+				--  If you are experiencing weird indenting issues, add the language to
+				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
+				additional_vim_regex_highlighting = { "ruby" },
+			},
+			indent = { enable = true, disable = { "ruby" } },
+		},
 	},
-	{ "folke/neodev.nvim", priority = 999, opts = {} },
+	{
+		"folke/lazydev.nvim",
+		priority = 999,
+		ft = "lua",
+		opts = {
+			library = {
+				{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
+			},
+		},
+	},
 })
 
 -- vim: ts=2 sts=2 sw=2 et

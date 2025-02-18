@@ -14,6 +14,16 @@ return {
 				end
 				return "make install_jsregexp"
 			end)(),
+			dependencies = {
+				-- `friendly-snippets` contains a variety of premade snippets.
+				--  See the README about individual language/framework/plugin snippets:
+				{
+					"rafamadriz/friendly-snippets",
+					config = function()
+						require("luasnip.loaders.from_vscode").lazy_load()
+					end,
+				},
+			},
 		},
 		"saadparwaiz1/cmp_luasnip",
 
@@ -21,13 +31,11 @@ return {
 		"hrsh7th/cmp-nvim-lsp",
 		"hrsh7th/cmp-path",
 		"hrsh7th/cmp-buffer",
-		"rafamadriz/friendly-snippets",
 	},
 	config = function()
 		local cmp = require("cmp")
 		local luasnip = require("luasnip")
 		luasnip.config.setup({})
-		require("luasnip.loaders.from_vscode").lazy_load()
 
 		cmp.setup({
 			snippet = {
@@ -76,7 +84,7 @@ return {
 				["<S-Tab>"] = cmp.mapping(function(fallback)
 					if cmp.visible() then
 						cmp.select_prev_item()
-					elseif luasnip.jumpable(-1) then
+					elseif luasnip.locally_jumpable(-1) then
 						luasnip.jump(-1)
 					else
 						fallback()
@@ -84,6 +92,11 @@ return {
 				end, { "i", "s" }),
 			}),
 			sources = {
+				{
+					name = "lazydev",
+					-- set group index to 0 to skip loading LuaLS completions as lazydev recommends it
+					group_index = 0,
+				},
 				{ name = "nvim_lsp" },
 				{ name = "luasnip" },
 				{ name = "path" },
