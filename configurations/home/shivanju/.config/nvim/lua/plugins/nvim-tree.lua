@@ -19,8 +19,8 @@ return {
 				width = 30,
 			},
 			filters = {
-				git_ignored = true,
-				dotfiles = true,
+				git_ignored = false,
+				dotfiles = false,
 			},
 			update_focused_file = {
 				enable = true,
@@ -28,6 +28,6 @@ return {
 		})
 
 		-- Keymaps
-		vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true })
+		vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { silent = true, desc = "Open file tree" })
 	end,
 }

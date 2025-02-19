@@ -21,9 +21,9 @@ return {
 			},
 		})
 
-		vim.keymap.set("n", "<leader>dv", ":DiffviewOpen<CR>", { silent = true, desc = "Open diffview" })
-		vim.keymap.set("n", "<leader>dc", ":DiffviewClose<CR>", { silent = true, desc = "Close diffview" })
-		vim.keymap.set("n", "<leader>dh", ":DiffviewFileHistory %<CR>", { silent = true, desc = "File history" })
-		vim.keymap.set("n", "<leader>dH", ":DiffviewFileHistory<CR>", { silent = true, desc = "Repo history" })
+		vim.keymap.set("n", "<leader>dv", "<cmd>DiffviewOpen<CR>", { silent = true, desc = "Open diffview" })
+		vim.keymap.set("n", "<leader>dc", "<cmd>DiffviewClose<CR>", { silent = true, desc = "Close diffview" })
+		vim.keymap.set("n", "<leader>dh", "<cmd>DiffviewFileHistory %<CR>", { silent = true, desc = "File history" })
+		vim.keymap.set("n", "<leader>dH", "<cmd>DiffviewFileHistory<CR>", { silent = true, desc = "Repo history" })
 	end,
 }

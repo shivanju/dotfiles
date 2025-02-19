@@ -26,7 +26,7 @@ return {
 		require("ibl").setup({
 			enabled = true,
 			scope = {
-				enabled = true,
+				enabled = false,
 				show_start = true,
 				show_end = true,
 				injected_languages = true,
@@ -34,8 +34,8 @@ return {
 				priority = 500,
 			},
 			indent = {
-				char = "┆", -- You can use "¦", "┆", "│", "⎸", or "▏"
-				tab_char = "┆",
+				char = "┊",
+				tab_char = "┊",
 				highlight = highlight,
 				smart_indent_cap = true,
 				priority = 1,
@@ -47,7 +47,7 @@ return {
 		})
 
 		-- Optional: Custom keymaps
-		vim.keymap.set("n", "<leader>il", "<cmd>IBLToggle<CR>", { desc = "toggle indent lines" })
-		vim.keymap.set("n", "<leader>is", "<cmd>IBLToggleScope<CR>", { desc = "toggle indent lines scope" })
+		vim.keymap.set("n", "<leader>il", "<cmd>IBLToggle<CR>", { desc = "Toggle indent lines" })
+		vim.keymap.set("n", "<leader>is", "<cmd>IBLToggleScope<CR>", { desc = "Toggle indent lines scope" })
 	end,
 }

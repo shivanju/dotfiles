@@ -2,21 +2,21 @@
 --  See `:help vim.keymap.set()`
 
 -- Diagnostic keymaps
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "goto previous diagnostic" })
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "goto next diagnostic" })
-vim.keymap.set("n", "<leader>df", vim.diagnostic.open_float, { desc = "show diagnostic in floating window" })
-vim.keymap.set("n", "<leader>dl", vim.diagnostic.setloclist, { desc = "send buffer diagnostics to local list" })
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, { desc = "Goto previous diagnostic" })
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next, { desc = "Goto next diagnostic" })
+vim.keymap.set("n", "<leader>df", vim.diagnostic.open_float, { desc = "Show diagnostic in floating window" })
+vim.keymap.set("n", "<leader>dl", vim.diagnostic.setloclist, { desc = "Send buffer diagnostics to loclist" })
 
 vim.keymap.set("i", "jk", "<Esc>", { silent = true })
 vim.keymap.set("i", "kj", "<Esc>", { silent = true })
 vim.keymap.set("n", "n", "nzz", { silent = true })
 vim.keymap.set("n", "N", "Nzz", { silent = true })
-vim.keymap.set({ "n", "i" }, "<C-s>", "<cmd>update<CR>", { silent = true, desc = "save file" })
-vim.keymap.set("n", "<M-k>", "<cmd>bn<CR>", { silent = true, desc = "goto next buffer" })
-vim.keymap.set("n", "<M-j>", "<cmd>bp<CR>", { silent = true, desc = "goto previous buffer" })
-vim.keymap.set("n", "<M-a>", "<C-^>", { silent = true, desc = "goto alternate buffer" })
-vim.keymap.set("n", "<M-t>", "gt", { silent = true, desc = "goto next tab" })
-vim.keymap.set("n", "<M-T>", "gT", { silent = true, desc = "goto previous tab" })
+vim.keymap.set({ "n", "i" }, "<C-s>", "<cmd>update<CR>", { silent = true, desc = "Save file" })
+vim.keymap.set("n", "<M-k>", "<cmd>bn<CR>", { silent = true, desc = "Goto next buffer" })
+vim.keymap.set("n", "<M-j>", "<cmd>bp<CR>", { silent = true, desc = "Goto previous buffer" })
+vim.keymap.set("n", "<M-a>", "<C-^>", { silent = true, desc = "Goto alternate buffer" })
+vim.keymap.set("n", "<M-t>", "gt", { silent = true, desc = "Goto next tab" })
+vim.keymap.set("n", "<M-T>", "gT", { silent = true, desc = "Goto previous tab" })
 
 -- Remap for dealing with line wrap
 vim.keymap.set("n", "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
