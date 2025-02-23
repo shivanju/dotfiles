@@ -1,33 +1,31 @@
 return {
 	"nvim-tree/nvim-tree.lua",
 	version = "*",
-	lazy = false,
 	dependencies = {
 		"nvim-tree/nvim-web-devicons",
 	},
-	config = function()
+	init = function()
 		-- disable netrw at the very start of your init.lua
 		vim.g.loaded_netrw = 1
 		vim.g.loaded_netrwPlugin = 1
-
-		require("nvim-tree").setup({
-			sort = {
-				sorter = "case_sensitive",
-			},
-			view = {
-				side = "right",
-				width = 30,
-			},
-			filters = {
-				git_ignored = false,
-				dotfiles = false,
-			},
-			update_focused_file = {
-				enable = true,
-			},
-		})
-
-		-- Keymaps
-		vim.keymap.set("n", "<leader>e", "<cmd>NvimTreeToggle<CR>", { silent = true, desc = "Open file tree" })
 	end,
+	opts = {
+		sort = {
+			sorter = "case_sensitive",
+		},
+		view = {
+			side = "right",
+			width = 40,
+		},
+		filters = {
+			git_ignored = false,
+			dotfiles = false,
+		},
+		update_focused_file = {
+			enable = true,
+		},
+	},
+	keys = {
+		{ "<leader>e", "<cmd>NvimTreeToggle<CR>", silent = true, desc = "Open file tree" },
+	},
 }

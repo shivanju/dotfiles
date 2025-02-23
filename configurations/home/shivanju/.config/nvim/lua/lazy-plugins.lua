@@ -1,7 +1,6 @@
 require("lazy").setup({
 	require("plugins.colorscheme"),
 	"tpope/vim-sleuth", -- Automatically adjusts 'shiftwidth' and 'expandtab'
-	{ "numToStr/Comment.nvim", opts = {} },
 	require("plugins.auto-pairs"),
 	require("plugins.indent-blankline"),
 	require("plugins.nvim-tree"),
@@ -12,6 +11,9 @@ require("lazy").setup({
 	require("plugins.telescope"),
 	require("plugins.conform"),
 	require("plugins.completion"),
+	require("plugins.mini"),
+	require("plugins.language-server"),
+	require("plugins.treesitter"),
 	{
 		"akinsho/toggleterm.nvim",
 		version = "*",
@@ -37,25 +39,6 @@ require("lazy").setup({
 				section_separators = "",
 				path = 0,
 			},
-		},
-	},
-	require("plugins.mini"),
-	require("plugins.language-server"),
-	{
-		"nvim-treesitter/nvim-treesitter",
-		build = ":TSUpdate",
-		main = "nvim-treesitter.configs", -- Sets main module to use for opts
-		opts = {
-			ensure_installed = { "bash", "c", "html", "lua", "markdown", "vim", "vimdoc" },
-			auto_install = true,
-			highlight = {
-				enable = true,
-				-- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-				--  If you are experiencing weird indenting issues, add the language to
-				--  the list of additional_vim_regex_highlighting and disabled languages for indent.
-				additional_vim_regex_highlighting = { "ruby" },
-			},
-			indent = { enable = true, disable = { "ruby" } },
 		},
 	},
 	{

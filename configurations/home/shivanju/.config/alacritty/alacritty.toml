@@ -1,32 +1,5 @@
+[general]
 live_config_reload = true
-
-[colors.bright]
-black =    '0x32302f'
-red =      '0xea6962'
-green =    '0xa9b665'
-yellow =   '0xd8a657'
-blue =     '0x7daea3'
-magenta =  '0xd3869b'
-cyan =     '0x89b482'
-white =    '0xd4be98'
-
-[colors.normal]
-black =    '0x32302f'
-red =      '0xea6962'
-green =    '0xa9b665'
-yellow =   '0xd8a657'
-blue =     '0x7daea3'
-magenta =  '0xd3869b'
-cyan =     '0x89b482'
-white =    '0xd4be98'
-
-[colors.primary]
-background =  '0x282828'
-foreground =  '0xd4be98'
-
-[cursor]
-style = "Block"
-unfocused_hollow = true
 
 [env]
 TERM = "xterm-256color"
@@ -34,19 +7,54 @@ TERM = "xterm-256color"
 [font]
 size = 13
 
-[font.glyph_offset]
-x = 0
-y = -1
+[font.normal]
+family = "JetBrains Mono"
+# style = "Light"
 
-[font.offset]
+[font.glyph_offset]
 x = 0
 y = 0
 
-[font.normal]
-family = "JetBrains Mono"
+[font.offset]
+x = 0
+y = -1
 
+[cursor]
+style = "Block"
+unfocused_hollow = true
 
 [scrolling]
 history = 10000
 multiplier = 3
+
+# Useful in MacOs
+# [window]
+# option_as_alt = "Both"
+
+# Colors (Gruvbox Material Medium Dark)
+[colors.primary]
+background = '#282828'
+foreground = '#d4be98'
+
+# Normal colors
+[colors.normal]
+black   = '#3c3836'
+red     = '#ea6962'
+green   = '#a9b665'
+yellow  = '#d8a657'
+blue    = '#7daea3'
+magenta = '#d3869b'
+cyan    = '#89b482'
+white   = '#d4be98'
+
+# Bright colors (same as normal colors)
+[colors.bright]
+black   = '#3c3836'
+red     = '#ea6962'
+green   = '#a9b665'
+yellow  = '#d8a657'
+blue    = '#7daea3'
+magenta = '#d3869b'
+cyan    = '#89b482'
+white   = '#d4be98'
 

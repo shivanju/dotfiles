@@ -47,19 +47,23 @@ return {
 		pcall(require("telescope").load_extension, "fzf")
 		pcall(require("telescope").load_extension, "ui-select")
 
+		local nmap = function(l, r, opts)
+			vim.keymap.set("n", l, r, opts)
+		end
 		-- See `:help telescope.builtin`
 		local builtin = require("telescope.builtin")
-		vim.keymap.set("n", "<leader>o", builtin.buffers, { desc = "Find current buffers" })
-		vim.keymap.set("n", "<leader>f", builtin.find_files, { desc = "Find files" })
-		vim.keymap.set("n", "<leader>r", builtin.oldfiles, { desc = "Find recently opened files" })
-		vim.keymap.set("n", "<leader>sh", builtin.help_tags, { desc = "Search help" })
-		vim.keymap.set("n", "<leader>sw", builtin.grep_string, { desc = "Search current word" })
-		vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "Search by grep" })
-		vim.keymap.set("n", "<leader>sd", builtin.diagnostics, { desc = "Search diagnostics" })
-		vim.keymap.set("n", "<leader>sr", builtin.resume, { desc = "Resume search" })
-		vim.keymap.set("n", "<leader>sb", builtin.builtin, { desc = "Search telescope builtins" })
-		vim.keymap.set("n", "<leader>sq", builtin.quickfix, { desc = "Search quickfix list" })
-		vim.keymap.set("n", "<leader>sf", function()
+		nmap("<leader>o", builtin.buffers, { desc = "Find current buffers" })
+		nmap("<leader>f", builtin.find_files, { desc = "Find files" })
+		nmap("<leader>r", builtin.oldfiles, { desc = "Find recently opened files" })
+		nmap("<leader>sh", builtin.help_tags, { desc = "Search help" })
+		nmap("<leader>sw", builtin.grep_string, { desc = "Search current word" })
+		nmap("<leader>sg", builtin.live_grep, { desc = "Search by grep" })
+		nmap("<leader>sd", builtin.diagnostics, { desc = "Search diagnostics" })
+		nmap("<leader>sr", builtin.resume, { desc = "Resume search" })
+		nmap("<leader>sb", builtin.builtin, { desc = "Search telescope builtins" })
+		nmap("<leader>qq", builtin.quickfix, { desc = "Search quickfix list" })
+		nmap("<leader>qh", builtin.quickfixhistory, { desc = "Search quickfix history" })
+		nmap("<leader>sf", function()
 			builtin.current_buffer_fuzzy_find(require("telescope.themes").get_dropdown({
 				winblend = 10,
 				previewer = false,

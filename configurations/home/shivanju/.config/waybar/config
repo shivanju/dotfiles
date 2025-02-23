@@ -19,13 +19,13 @@
         "format": "{:%a %d-%b-%Y  %H:%M}"
     },
     "cpu": {
-        "format": "{usage}% ",
+        "format": "{usage}%  ",
     },
     "memory": {
-        "format": "{}% "
+        "format": "{}%  "
     },
     "backlight": {
-        "format": "{percent}% {icon}",
+        "format": "{percent}% {icon} ",
         "format-icons": ["", "", "", "", "", "", "", "", ""],
         "scroll-step": 5.0,
         "smooth-scrolling-threshold": 5.0,
@@ -36,22 +36,22 @@
             "warning": 30,
             "critical": 15
         },
-        "format": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "{time} {icon}",
+        "format": "{capacity}% {icon} ",
+        "format-charging": "{capacity}%  ",
+        "format-plugged": "{capacity}%  ",
+        "format-alt": "{time} {icon} ",
         "format-icons": ["", "", "", "", ""]
     },
     "network": {
-        "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-disconnected": "Disconnected ⚠",
+        "format-wifi": "{essid} ({signalStrength}%)  ",
+        "format-disconnected": "Disconnected ⚠ ",
         "format-alt": "{ifname}: {ipaddr}/{cidr}"
     },
     "pulseaudio": {
-    "format": "{volume}% {icon}",
-    "format-muted": "{volume}% ",
-    "format-bluetooth": "{volume}% {icon}",
-    "format-bluetooth-muted": "{volume}% ",
+    "format": "{volume}% {icon} ",
+    "format-muted": "{volume}%  ",
+    "format-bluetooth": "{volume}% {icon} ",
+    "format-bluetooth-muted": "{volume}%  ",
     "format-icons": {
         "headphone": "",
         "hands-free": "",
