@@ -1,19 +1,19 @@
 require("lazy").setup({
 	require("plugins.colorscheme"),
-	"tpope/vim-sleuth", -- Automatically adjusts 'shiftwidth' and 'expandtab'
 	require("plugins.auto-pairs"),
 	require("plugins.indent-blankline"),
 	require("plugins.nvim-tree"),
 	require("plugins.diffview"),
 	require("plugins.neogit"),
 	require("plugins.gitsigns"),
-	{ "folke/which-key.nvim", event = "VimEnter", opts = {} },
 	require("plugins.telescope"),
 	require("plugins.conform"),
 	require("plugins.completion"),
 	require("plugins.mini"),
 	require("plugins.language-server"),
 	require("plugins.treesitter"),
+	{ "folke/which-key.nvim", event = "VimEnter", opts = {} },
+	"NMAC427/guess-indent.nvim", -- Detect tabstop and shiftwidth automatically
 	{
 		"akinsho/toggleterm.nvim",
 		version = "*",
@@ -43,10 +43,10 @@ require("lazy").setup({
 	},
 	{
 		"folke/lazydev.nvim",
-		priority = 999,
 		ft = "lua",
 		opts = {
 			library = {
+				-- Load luvit types when the `vim.uv` word is found
 				{ path = "${3rd}/luv/library", words = { "vim%.uv" } },
 			},
 		},

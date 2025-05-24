@@ -1,10 +1,14 @@
 return {
 	"neovim/nvim-lspconfig",
 	dependencies = {
-		{ "williamboman/mason.nvim", opts = {} },
-		"williamboman/mason-lspconfig.nvim",
+		{ "mason-org/mason.nvim", opts = {} },
+		"mason-org/mason-lspconfig.nvim",
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
-		"hrsh7th/cmp-nvim-lsp",
+
+		-- Allows extra capabilities provided by blink.cmp
+		"saghen/blink.cmp",
+
+		-- Useful status updates for LSP.
 		{ "j-hui/fidget.nvim", opts = {} },
 	},
 	config = function()
@@ -27,7 +31,10 @@ return {
 				nmap("<leader>la", vim.lsp.buf.code_action, "Code action")
 
 				local client = vim.lsp.get_client_by_id(event.data.client_id)
-				if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+				if
+					client
+					and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf)
+				then
 					local highlight_augroup = vim.api.nvim_create_augroup("LSPHighlight", { clear = false })
 					vim.api.nvim_create_autocmd({ "CursorHold", "CursorHoldI" }, {
 						buffer = event.buf,
@@ -52,8 +59,24 @@ return {
 			end,
 		})
 
-		local capabilities = vim.lsp.protocol.make_client_capabilities()
-		capabilities = vim.tbl_deep_extend("force", capabilities, require("cmp_nvim_lsp").default_capabilities())
+		-- Diagnostic Config
+		-- See :help vim.diagnostic.Opts
+		vim.diagnostic.config({
+			severity_sort = true,
+			float = { border = "rounded", source = "if_many" },
+			underline = { severity = vim.diagnostic.severity.ERROR },
+			signs = vim.g.have_nerd_font and {
+				text = {
+					[vim.diagnostic.severity.ERROR] = "󰅚 ",
+					[vim.diagnostic.severity.WARN] = "󰀪 ",
+					[vim.diagnostic.severity.INFO] = "󰋽 ",
+					[vim.diagnostic.severity.HINT] = "󰌶 ",
+				},
+			} or {},
+			virtual_text = false,
+		})
+
+		local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 		--  Add any additional override configuration in the following tables. Available keys are:
 		--  - cmd (table): Override the default command used to start the server
@@ -61,12 +84,14 @@ return {
 		--  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
 		--  - settings (table): Override the default settings passed when initializing the server.
 		local servers = {
+			-- See `:help lspconfig-all` for a list of all the pre-configured LSPs
+			clangd = {},
+			gopls = {},
+			rust_analyzer = {},
 			pyright = {},
 			ts_ls = {},
-			prismals = {},
-			clangd = {},
 			lua_ls = {
-				single_file_support = false,
+				single_file_support = true,
 				settings = {
 					Lua = {
 						completion = {
@@ -88,6 +113,8 @@ return {
 		require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
 
 		require("mason-lspconfig").setup({
+			ensure_installed = {}, -- explicitly set to an empty table (installation is via mason-tool-installer)
+			automatic_installation = false,
 			handlers = {
 				function(server_name)
 					local server = servers[server_name] or {}

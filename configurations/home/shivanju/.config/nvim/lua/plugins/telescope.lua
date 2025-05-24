@@ -1,7 +1,6 @@
 return {
 	"nvim-telescope/telescope.nvim",
 	event = "VimEnter",
-	branch = "0.1.x",
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		{
@@ -52,9 +51,14 @@ return {
 		end
 		-- See `:help telescope.builtin`
 		local builtin = require("telescope.builtin")
-		nmap("<leader>o", builtin.buffers, { desc = "Find current buffers" })
+
+		nmap("<leader>o", function()
+			builtin.buffers({ sort_mru = true, previewer = false })
+		end, { desc = "Find buffers" })
+		nmap("<leader>r", function()
+			builtin.oldfiles({ only_cwd = true })
+		end, { desc = "Find recently opened files" })
 		nmap("<leader>f", builtin.find_files, { desc = "Find files" })
-		nmap("<leader>r", builtin.oldfiles, { desc = "Find recently opened files" })
 		nmap("<leader>sh", builtin.help_tags, { desc = "Search help" })
 		nmap("<leader>sw", builtin.grep_string, { desc = "Search current word" })
 		nmap("<leader>sg", builtin.live_grep, { desc = "Search by grep" })

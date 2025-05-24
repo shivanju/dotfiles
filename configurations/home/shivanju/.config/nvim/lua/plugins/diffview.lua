@@ -7,7 +7,7 @@ return {
 			enhanced_diff_hl = true,
 			view = {
 				merge_tool = {
-					layout = "diff3_mixed", -- left, right, bottom layout
+					layout = "diff3_horizontal", -- left, middle, right
 					disable_diagnostics = true, -- disable LSP diagnostics in diff views
 				},
 			},
@@ -17,6 +17,7 @@ return {
 				},
 				file_panel = {
 					["R"] = actions.refresh_files,
+					["q"] = actions.close,
 				},
 			},
 		})

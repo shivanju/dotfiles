@@ -8,6 +8,7 @@ return {
 			topdelete = { text = "➤" },
 			changedelete = { text = "▎" },
 		},
+		sign_priority = 100, -- Setting it fairly high ensures that git signs always appear
 		current_line_blame = true,
 		on_attach = function(bufnr)
 			local gs = require("gitsigns")
