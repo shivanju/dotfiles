@@ -73,10 +73,8 @@ return {
 					[vim.diagnostic.severity.HINT] = "󰌶 ",
 				},
 			} or {},
-			virtual_text = false,
+			virtual_lines = { severity = vim.diagnostic.severity.ERROR },
 		})
-
-		local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 		--  Add any additional override configuration in the following tables. Available keys are:
 		--  - cmd (table): Override the default command used to start the server
@@ -103,6 +101,8 @@ return {
 				},
 			},
 		}
+
+		local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 		-- You can add other tools here that you want Mason to install
 		-- for you, so that they are available from within Neovim.

@@ -12,6 +12,7 @@ require("lazy").setup({
 	require("plugins.mini"),
 	require("plugins.language-server"),
 	require("plugins.treesitter"),
+	require("plugins.llm"),
 	{ "folke/which-key.nvim", event = "VimEnter", opts = {} },
 	"NMAC427/guess-indent.nvim", -- Detect tabstop and shiftwidth automatically
 	{
