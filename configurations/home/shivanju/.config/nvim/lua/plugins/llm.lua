@@ -21,7 +21,6 @@ return {
 				suggestion = {
 					enabled = false,
 				},
-				copilot_model = "gpt-4.1",
 			})
 
 			local nmap = function(l, r, opts)
@@ -42,7 +41,9 @@ return {
 		},
 		build = "make tiktoken", -- Only on MacOS or Linux
 		config = function()
-			require("CopilotChat").setup({})
+			require("CopilotChat").setup({
+				model = "gpt-4.1",
+			})
 
 			local nmap = function(l, r, opts)
 				vim.keymap.set("n", l, r, opts)
