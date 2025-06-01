@@ -2,11 +2,14 @@ return {
 	"neovim/nvim-lspconfig",
 	dependencies = {
 		{ "mason-org/mason.nvim", opts = {} },
-		"mason-org/mason-lspconfig.nvim",
-		"WhoIsSethDaniel/mason-tool-installer.nvim",
 
-		-- Allows extra capabilities provided by blink.cmp
-		"saghen/blink.cmp",
+		-- Automatically installs and enables the configured LSP servers.
+		{
+			"mason-org/mason-lspconfig.nvim",
+			opts = {
+				ensure_installed = { "lua_ls", "gopls", "rust_analyzer", "clangd", "pyright", "ts_ls" },
+			},
+		},
 
 		-- Useful status updates for LSP.
 		{ "j-hui/fidget.nvim", opts = {} },
@@ -57,71 +60,6 @@ return {
 					})
 				end
 			end,
-		})
-
-		-- Diagnostic Config
-		-- See :help vim.diagnostic.Opts
-		vim.diagnostic.config({
-			severity_sort = true,
-			float = { border = "rounded", source = "if_many" },
-			underline = { severity = vim.diagnostic.severity.ERROR },
-			signs = vim.g.have_nerd_font and {
-				text = {
-					[vim.diagnostic.severity.ERROR] = "󰅚 ",
-					[vim.diagnostic.severity.WARN] = "󰀪 ",
-					[vim.diagnostic.severity.INFO] = "󰋽 ",
-					[vim.diagnostic.severity.HINT] = "󰌶 ",
-				},
-			} or {},
-			virtual_lines = { severity = vim.diagnostic.severity.ERROR },
-		})
-
-		--  Add any additional override configuration in the following tables. Available keys are:
-		--  - cmd (table): Override the default command used to start the server
-		--  - filetypes (table): Override the default list of associated filetypes for the server
-		--  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
-		--  - settings (table): Override the default settings passed when initializing the server.
-		local servers = {
-			-- See `:help lspconfig-all` for a list of all the pre-configured LSPs
-			clangd = {},
-			gopls = {},
-			rust_analyzer = {},
-			pyright = {},
-			ts_ls = {},
-			lua_ls = {
-				single_file_support = true,
-				settings = {
-					Lua = {
-						completion = {
-							callSnippet = "Replace",
-						},
-						-- You can toggle below to enable/disable Lua_LS's noisy `missing-fields` warnings
-						diagnostics = { disable = { "missing-fields" } },
-					},
-				},
-			},
-		}
-
-		local capabilities = require("blink.cmp").get_lsp_capabilities()
-
-		-- You can add other tools here that you want Mason to install
-		-- for you, so that they are available from within Neovim.
-		local ensure_installed = vim.tbl_keys(servers or {})
-		vim.list_extend(ensure_installed, {
-			"stylua", -- Used to format lua code
-		})
-		require("mason-tool-installer").setup({ ensure_installed = ensure_installed })
-
-		require("mason-lspconfig").setup({
-			ensure_installed = {}, -- explicitly set to an empty table (installation is via mason-tool-installer)
-			automatic_installation = false,
-			handlers = {
-				function(server_name)
-					local server = servers[server_name] or {}
-					server.capabilities = vim.tbl_deep_extend("force", {}, capabilities, server.capabilities or {})
-					require("lspconfig")[server_name].setup(server)
-				end,
-			},
 		})
 	end,
 }

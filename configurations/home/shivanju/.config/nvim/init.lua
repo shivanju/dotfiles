@@ -7,11 +7,10 @@ vim.g.maplocalleader = " "
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = true
 
--- [[ Setting options ]]
 require("base.options")
-
--- [[ Basic Keymaps ]]
 require("base.keymaps")
+require("base.diagnostic")
+require("base.auto-commands")
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 require("lazy-bootstrap")
