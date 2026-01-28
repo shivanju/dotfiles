@@ -15,7 +15,7 @@ return {
     },
     view = {
       side = "left",
-      width = 40,
+      width = 30,
     },
     filters = {
       git_ignored = false,

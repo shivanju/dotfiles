@@ -6,3 +6,6 @@
 	prompt = false
 [difftool "vimdiff"]
 	path = nvim
+[user]
+	email = theshivanju@gmail.com
+	name = Shivanju Awasthi
